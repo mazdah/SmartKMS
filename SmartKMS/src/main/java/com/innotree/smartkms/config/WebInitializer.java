@@ -50,7 +50,7 @@ public class WebInitializer implements WebApplicationInitializer {
         // TODO 개발환경은 JVM Option에 추가한다. -Dspring.profiles.active=development
         // rootContext.getEnvironment().setDefaultProfiles("production");
         rootContext.getEnvironment().setDefaultProfiles("development");
-        rootContext.register(ApplicationContext.class);
+        rootContext.register(SKMSMvcConfig.class);
         //rootContext.register(ApplicationContext.class, DatabaseContext.class);
         rootContext.refresh();
  
