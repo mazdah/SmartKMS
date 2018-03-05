@@ -32,7 +32,7 @@ public class WebInitializer implements WebApplicationInitializer {
 	
 	Logger logger = LoggerFactory.getLogger(WebInitializer.class);
     
-    private static final String CONFIG_LOCATION = "com.lgup.iaic.common.config";
+    private static final String CONFIG_LOCATION = "com.innotree.smartkms.config";
  
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
@@ -79,10 +79,10 @@ public class WebInitializer implements WebApplicationInitializer {
     
     public void configureServletContext(ServletContext servletContext, WebApplicationContext rootContext) {
         AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-        ctx.setDisplayName("appServlet");
+        ctx.setDisplayName("dispatcherServlet");
         ctx.setConfigLocation(CONFIG_LOCATION);
         
-        ServletRegistration.Dynamic restServlet = servletContext.addServlet("appServlet", new DispatcherServlet(ctx));
+        ServletRegistration.Dynamic restServlet = servletContext.addServlet("dispatcherServlet", new DispatcherServlet(ctx));
         restServlet.setLoadOnStartup(1);
         Set<String> mappingConflicts = restServlet.addMapping("/*");
     
