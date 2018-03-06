@@ -17,6 +17,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.context.support.GenericWebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
+import org.springframework.web.filter.ShallowEtagHeaderFilter;
 import org.springframework.web.servlet.DispatcherServlet;
  
 import lombok.extern.slf4j.Slf4j;
@@ -51,18 +52,22 @@ public class WebInitializer implements WebApplicationInitializer {
     		/*
          * 인코딩 필터 등록
          */
-        FilterRegistration characterEncodingFilter = servletContext.addFilter("CharacterEncodingFilter", CharacterEncodingFilter.class);
+        FilterRegistration.Dynamic characterEncodingFilter = servletContext.addFilter("CharacterEncodingFilter", CharacterEncodingFilter.class);
         characterEncodingFilter.setInitParameter("encoding", "UTF-8");
         characterEncodingFilter.setInitParameter("forceEncoding", "true");
         characterEncodingFilter.addMappingForUrlPatterns(null, false, "/*");
         
         /*
+         * ETag지원을 위한 필터 등록...
+         */
+        FilterRegistration.Dynamic etagFilter = servletContext.addFilter("etagFilter", ShallowEtagHeaderFilter.class);
+        etagFilter.addMappingForUrlPatterns(null, false, "/*");
+        
+        /*
          * RESTFul지원을 위한 필터 등록...
          */
-        servletContext.addFilter(
-                "HttpMethodFilter",
-                HiddenHttpMethodFilter.class
-        ).addMappingForUrlPatterns(null, false, "/*");
+        FilterRegistration.Dynamic methodFilter = servletContext.addFilter("HttpMethodFilter", HiddenHttpMethodFilter.class);
+        methodFilter.addMappingForUrlPatterns(null, false, "/*");
  
         servletContext.setInitParameter("defaultHtmlEscape", "true");
     }
