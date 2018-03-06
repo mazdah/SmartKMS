@@ -31,39 +31,31 @@ import lombok.extern.slf4j.Slf4j;
 public class WebInitializer implements WebApplicationInitializer {
 	
 	Logger logger = LoggerFactory.getLogger(WebInitializer.class);
-    
-    private static final String CONFIG_LOCATION = "com.innotree.smartkms.config";
  
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-    		ServletRegistration.Dynamic registration = 
-    				servletContext.addServlet("dispatcher", new DispatcherServlet());
-    	    registration.setLoadOnStartup(1);
-    	    registration.addMapping("*.request");
-    	      
-        WebApplicationContext rootContext = createRootContext(servletContext);
-        configureServletContext(servletContext, rootContext);
-    }
- 
-    private WebApplicationContext createRootContext(ServletContext servletContext) {
-        AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-        // TODO 개발환경은 JVM Option에 추가한다. -Dspring.profiles.active=development
-        // rootContext.getEnvironment().setDefaultProfiles("production");
-        rootContext.getEnvironment().setDefaultProfiles("development");
-        rootContext.register(SKMSMvcConfig.class);
-        //rootContext.register(ApplicationContext.class, DatabaseContext.class);
-        rootContext.refresh();
- 
-        servletContext.addListener(new ContextLoaderListener(rootContext));
- 
-        /*
+    	
+    		servletContext.setInitParameter("contextConfigLocation", "<NONE>");
+    	
+    		AnnotationConfigWebApplicationContext context
+    			= new AnnotationConfigWebApplicationContext();
+    		context.setConfigLocation("com.innotree.smartkms.config");
+    		//servletContext.addListener(new ContextLoaderListener(context));
+    		
+
+    		ServletRegistration.Dynamic dispatcher = servletContext.addServlet("dispatcher", new DispatcherServlet(context));
+       
+    		dispatcher.setLoadOnStartup(1);
+    		dispatcher.addMapping("/");
+    		
+    		/*
          * 인코딩 필터 등록
          */
         FilterRegistration characterEncodingFilter = servletContext.addFilter("CharacterEncodingFilter", CharacterEncodingFilter.class);
         characterEncodingFilter.setInitParameter("encoding", "UTF-8");
         characterEncodingFilter.setInitParameter("forceEncoding", "true");
         characterEncodingFilter.addMappingForUrlPatterns(null, false, "/*");
- 
+        
         /*
          * RESTFul지원을 위한 필터 등록...
          */
@@ -73,24 +65,5 @@ public class WebInitializer implements WebApplicationInitializer {
         ).addMappingForUrlPatterns(null, false, "/*");
  
         servletContext.setInitParameter("defaultHtmlEscape", "true");
- 
-        return rootContext;
-    }
-    
-    public void configureServletContext(ServletContext servletContext, WebApplicationContext rootContext) {
-        AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-        ctx.setDisplayName("dispatcherServlet");
-        ctx.setConfigLocation(CONFIG_LOCATION);
-        
-        ServletRegistration.Dynamic restServlet = servletContext.addServlet("dispatcherServlet", new DispatcherServlet(ctx));
-        restServlet.setLoadOnStartup(1);
-        Set<String> mappingConflicts = restServlet.addMapping("/*");
-    
-        if (!mappingConflicts.isEmpty()) {
-            for (String s : mappingConflicts) {
-                logger.error("Mapping conflict : " + s);
-            }
-            throw new IllegalStateException("'appServlet' cannot be mapped to '/*'");
-        }
     }
 }

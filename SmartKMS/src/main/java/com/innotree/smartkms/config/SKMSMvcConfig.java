@@ -75,8 +75,8 @@ public class SKMSMvcConfig implements WebMvcConfigurer {
 	public void addViewControllers(ViewControllerRegistry registry) {
 		// TODO Auto-generated method stub
 		
-		registry.addViewController("/skms/").setViewName("index");
-		registry.addViewController("/skms/admin/").setViewName("index");
+		registry.addViewController("/SmartKMS/").setViewName("index");
+		registry.addViewController("/SmartKMS/admin/").setViewName("index");
 		registry.addViewController("/").setViewName("index");
 	}
 
