@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.elasticsearch.client.AdminClient;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.slf4j.LoggerFactory;
@@ -84,5 +86,10 @@ public class ElasticHelper {
 		  } catch (IOException e) {
 		   e.printStackTrace();
 		  }
+	}
+	
+	public static void makeSimpleIndex (Map<String, String> indexMap) {
+		
+		IndicesAdminClient indicesAdminClient = client.admin().indices();
 	}
 }
