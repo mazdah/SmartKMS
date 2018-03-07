@@ -1,6 +1,7 @@
 package com.innotree.smartkms.elastic;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
@@ -19,7 +20,16 @@ public class ElasticClientHelper {
 	            .put("client.transport.sniff", true)
 	            .build();
 		
-		Client client = new PreBuiltTransportClient(settings);
+		Client client = null;
+		try {
+			client = new PreBuiltTransportClient(settings)
+					.addTransportAddress(new TransportAddress(InetAddress.getByName("host1"), 9300))
+			        .addTransportAddress(new TransportAddress(InetAddress.getByName("host2"), 9300));
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		};
+		
         return client;
     }
     
