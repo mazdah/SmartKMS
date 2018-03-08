@@ -12,19 +12,20 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
 
 public class ElasticClientHelper {
 	public static Client newTransportClient() {
 		Settings settings = Settings.builder()
 	            .put("cluster.name", "elasticsearch")
-	            .put("client.transport.sniff", true)
+	            .put("xpack.security.user", "elastic:w00hj8928")
+//	            .put("client.transport.sniff", true)
 	            .build();
 		
 		Client client = null;
 		try {
-			client = new PreBuiltTransportClient(settings)
-					.addTransportAddress(new TransportAddress(InetAddress.getByName("host1"), 9300))
-			        .addTransportAddress(new TransportAddress(InetAddress.getByName("host2"), 9300));
+			client = new PreBuiltXPackTransportClient(settings)
+					.addTransportAddress(new TransportAddress(InetAddress.getByName("127.0.0.1"), 9300));
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -36,12 +37,15 @@ public class ElasticClientHelper {
     public static Client newTransportClient(String cluster, InetAddress host) {
         Settings settings = Settings.builder()
             .put("cluster.name", cluster)
-            .put("client.transport.sniff", true)
+            .put("xpack.security.user", "elastic:w00hj8928")
+//            .put("client.transport.sniff", true)
             .build();
               
-        Client result = new TransportClient(settings).addTransportAddress(new TransportAddress(host, 9300));
+        Client client = null;
+		client = new PreBuiltXPackTransportClient(settings)
+				.addTransportAddress(new TransportAddress(host, 9300));;
         
-        return result;
+        return client;
     }
     
     public static void connectDisconnect(Client client) {

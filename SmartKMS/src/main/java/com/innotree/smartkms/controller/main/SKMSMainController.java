@@ -25,6 +25,8 @@ public class SKMSMainController {
 	
 	@RequestMapping(value="/admin")
 	public String admin() {
+		ElasticHelper.makeSimpleIndex(null);
+		
 		return "admin/admin";
 	}
 }

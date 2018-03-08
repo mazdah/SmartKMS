@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.elasticsearch.client.AdminClient;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.slf4j.LoggerFactory;
@@ -89,7 +91,14 @@ public class ElasticHelper {
 	}
 	
 	public static void makeSimpleIndex (Map<String, String> indexMap) {
+		Client client = ElasticClientHelper.newTransportClient();
+		IndicesAdminClient indicesClient = client.admin().indices();
 		
-		IndicesAdminClient indicesAdminClient = client.admin().indices();
+		client.admin().indices().prepareCreate("real_estate")
+        .setSettings(Settings.builder()             
+                .put("index.number_of_shards", 3)
+                .put("index.number_of_replicas", 0)
+        )
+        .get();
 	}
 }
