@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
@@ -94,11 +95,13 @@ public class ElasticHelper {
 		Client client = ElasticClientHelper.newTransportClient();
 		IndicesAdminClient indicesClient = client.admin().indices();
 		
-		client.admin().indices().prepareCreate("real_estate")
+		CreateIndexResponse response = client.admin().indices().prepareCreate("real_estate")
         .setSettings(Settings.builder()             
                 .put("index.number_of_shards", 3)
                 .put("index.number_of_replicas", 0)
         )
         .get();
+		
+		
 	}
 }
