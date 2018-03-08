@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 @Configuration
-@ComponentScan("com.innotree.smartkms")
+@ComponentScan(basePackages = {"com.innotree.smartkms"})
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
@@ -19,7 +19,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// TODO Auto-generated method stub
 		super.configure(web);
 		
-		web.ignoring().antMatchers("/css/**", "/js/**", "/images/**",  "/");
+		web.ignoring().antMatchers("/css/**", "/js/**", "/images/**", "/");
 	}
 
 	@Override
