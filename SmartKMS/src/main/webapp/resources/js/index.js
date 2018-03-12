@@ -69,8 +69,8 @@ var view = function () {
 	
 	return {
 		init			: _init
-	}
-};
+	};
+}();
 
 view.init();
 
@@ -81,7 +81,7 @@ var controller = function () {
 	
 	return {
 		init			: _init
-	}
-};
+	};
+}();
 
 controller.init();
