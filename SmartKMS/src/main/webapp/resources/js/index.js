@@ -43,3 +43,45 @@ resizeObj.onResize(function()
 //	}
 	
 });
+
+$(document).ready(function() {
+	$("._dataregist").click(function () {
+		$("#ciframe").attr("src", "/SmartKMS/dataregist");
+	});
+	
+	$("._indexlist").click(function () {
+		$("#ciframe").attr("src", "/SmartKMS/indexlist");
+	});
+
+	$("._datachart").click(function () {
+		$("#ciframe").attr("src", "/SmartKMS/datachart");
+	});
+
+	$("._realtimechart").click(function () {
+		$("#ciframe").attr("src", "/SmartKMS/realtimechart");
+	});
+});
+
+var view = function () {
+	var _init = function () {
+		
+	};
+	
+	return {
+		init			: _init
+	}
+};
+
+view.init();
+
+var controller = function () {
+	var _init = function () {
+		
+	};
+	
+	return {
+		init			: _init
+	}
+};
+
+controller.init();

@@ -334,7 +334,7 @@
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu" data-widget="tree">
         <li class="header">MAIN NAVIGATION</li>
-        <li class="active treeview">
+        <li class="treeview">
           <a href="#">
             <i class="fa fa-database"></i> <span>빅데이터 분석</span>
             <span class="pull-right-container">
@@ -342,10 +342,10 @@
             </span>
           </a>
           <ul class="treeview-menu">
-            <li class="active"><a href="index.html"><i class="fa fa-file-excel-o"></i> 데이터 등록</a></li>
-            <li><a href="index2.html"><i class="fa fa-list"></i> Index 목록</a></li>
-            <li><a href="index2.html"><i class="fa fa-pie-chart"></i> 데이터 Chart</a></li>
-            <li><a href="index2.html"><i class="fa fa-clock-o"></i> Realtime Chart</a></li>
+            <li><a href="#" class="_dataregist"><i class="fa fa-file-excel-o"></i> 데이터 등록</a></li>
+            <li><a href="#" class="_indexlist"><i class="fa fa-list"></i> Index 목록</a></li>
+            <li><a href="#" class="_datachart"><i class="fa fa-pie-chart"></i> 데이터 Chart</a></li>
+            <li><a href="#" class="_realtimechart"><i class="fa fa-clock-o"></i> Realtime Chart</a></li>
           </ul>
         </li>
       </ul>
@@ -357,19 +357,19 @@
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <h1>
+      <h1 class="_header_main">
         Dashboard
-        <small>Control panel</small>
+        <small class="header_sub">Control panel</small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Dashboard</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> <span class="_bcmain">Home</span></a></li>
+        <li class="active _bcsub">Dashboard</li>
       </ol>
     </section>
 
     <!-- Main content -->
     <section class="content">
-		<iframe id="ciframe" name="content-frame" src="/bigdata/registerdata.html" border="0" frameborder="0" marginhight="0" scrolling="yes" width="100%"></iframe>
+		<iframe id="ciframe" name="content-frame" src="/SmartKMS/dataregist" border="0" frameborder="1" marginhight="0" scrolling="yes" width="100%"></iframe>
     </section>
     <!-- /.content -->
   </div>

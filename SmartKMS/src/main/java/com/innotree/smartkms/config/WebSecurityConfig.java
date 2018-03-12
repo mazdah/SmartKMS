@@ -27,8 +27,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// TODO Auto-generated method stub
 		super.configure(http);
 		
-		http.authorizeRequests()
-		.antMatchers("/SmartKMS/admin/**").access("ROLE_ADMIN");
+		http
+		.headers().frameOptions().sameOrigin().and() // iframe 허용 처리
+		.authorizeRequests().antMatchers("/SmartKMS/admin/**").access("ROLE_ADMIN");
 	}
 	
 	@Autowired
