@@ -20,11 +20,12 @@
 </head>
 <body>
 	<!-- <form id="fileupload" action="/SmartKMS/fileupload" method="POST" enctype="multipart/form-data"> -->
-	<form id="fileupload">
+	<form id="fileupload" method="POST" enctype="multipart/form-data" action="/SmartKMS/fileupload">
 	<label>Index Name</label>
 	<br>
+	<!--  -->
 	<div class="form-group _indexsel">
-	<select class="form-control select2" name="indexName" style="width: 40%;">
+	<select class="form-control select2 _indexName" name="indexName" style="width: 40%;">
                   <option selected="selected">Alabama</option>
                   <option>Alaska</option>
                   <option>California</option>
@@ -39,7 +40,7 @@
                 </button>
     </div>
     <div class="form-group _indexinput">
-    <input class="form-control col-md-4" type="text" name="indexName" placeholder="Index 이름" style="width: 40%;">
+    <input class="form-control _indexName col-md-4" type="text" name="indexName" placeholder="Index 이름" style="width: 40%;">
     <button type="button" class="btn btn-primary _selectindex col-md-1" >
                     <i class="glyphicon glyphicon-upload"></i>
                     <span>기존 Index 선택</span>
@@ -50,7 +51,7 @@
     <div class="form-group">
     <label>Type</label>
     <br>
-    <input class="form-control" type="text" name="type" placeholder="Input Type" style="width: 50%;">
+    <input class="form-control _type" type="text" name="type" placeholder="Input Type" style="width: 50%;">
 	</div>
 	<br>
 	<br>
@@ -99,16 +100,6 @@
         <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
     </form>
     </div>
-    <!-- The blueimp Gallery widget -->
-	<div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls" data-filter=":even">
-	    <div class="slides"></div>
-	    <h3 class="title"></h3>
-	    <a class="prev">‹</a>
-	    <a class="next">›</a>
-	    <a class="close">×</a>
-	    <a class="play-pause"></a>
-	    <ol class="indicator"></ol>
-	</div>
   <!-- The template to display files available for upload -->
 <script id="template-upload" type="text/x-tmpl">
 {% for (var i=0, file; file=o.files[i]; i++) { %}
@@ -216,7 +207,6 @@
   <!-- The File Upload user interface plugin -->
   <script src="js/fileupload/jquery.fileupload-ui.js"></script>
   <!-- The main application script -->
-  <script src="js/fileupload/main.js"></script>
   <script src="js/bigdata/registdata.js"></script>
 </body>
 </html>

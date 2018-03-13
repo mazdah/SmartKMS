@@ -3,13 +3,16 @@ package com.innotree.smartkms.config;
 import java.util.Set;
 
 import javax.servlet.FilterRegistration;
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -33,6 +36,9 @@ public class WebInitializer implements WebApplicationInitializer {
 	
 	Logger logger = LoggerFactory.getLogger(WebInitializer.class);
  
+	private String tempDir = "/Volumes/Storage2/elastic_data/temp";
+	private int maxUploadSize = 1024 * 1024 * 1024;
+	
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
     	
@@ -49,6 +55,11 @@ public class WebInitializer implements WebApplicationInitializer {
        
     		dispatcher.setLoadOnStartup(1);
     		dispatcher.addMapping("/");
+
+    		MultipartConfigElement multipartConfigElement = new MultipartConfigElement(tempDir, 
+    				maxUploadSize, maxUploadSize * 2, maxUploadSize / 2);
+    		
+    		dispatcher.setMultipartConfig(multipartConfigElement);
     		
     		/*
          * 인코딩 필터 등록

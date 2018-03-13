@@ -2,30 +2,42 @@ var isCreateIndex = true;
 
 $("._indexsel").hide();
 
+$(function () {
+    'use strict';
+
+    // Initialize the jQuery File Upload widget:
+    $('#fileupload').fileupload({
+        // Uncomment the following to send cross-domain cookies:
+        xhrFields: {withCredentials: true},
+        url: '/SmartKMS/fileupload'
+    });
+
+    // Enable iframe cross-domain access via redirect option:
+    $('#fileupload').fileupload(
+        'option',
+        'redirect',
+        window.location.href.replace(
+            /\/[^\/]*$/,
+            '/cors/result.html?%s'
+        )
+    );
+});
+
 $(document).ready(function () {
 	//Initialize Select2 Elements
     $(".select2").select2()
     
-    $("._start").click(function () {
-    		alert("file upload");
-    		$("#fileupload").submit();
+    $("._start").click(function (event) {
+    	
+    		event.preventDefault();
     		
-//    		$("#fileupload").ajaxSubmit({
-//    			dataType: 'json',
-//    			url: '/SmartKMS/fileupload',
-//    			success: function (data, status, jqXHR) {
-//    				alert(JSON.stringify(jqXHR));
-//    			},
-//    			error: function (jqXHR, status) {
-//    				alert(JSON.stringify(jqXHR));
-//    			}
-//    			
-//    		});
+    		var formData = $('#fileupload')[0];
+    		var data = new FormData(formData);
     		
     		$.ajax({
     	        url: "/SmartKMS/fileupload",
     	        type: "POST",
-    	        data: new FormData($("#fileupload")[0]),
+    	        data: data,
     	        enctype: 'multipart/form-data',
     	        processData: false,
     	        contentType: false,
@@ -37,7 +49,7 @@ $(document).ready(function () {
     	        error: function (jqXHR, status) {
     	          // Handle upload error
     	          alert(
-    	              "File not uploaded (perhaps it's too much big)\n\n" + JSON.stringify(jqXHR));
+    	              "File not uploaded \n\n" + JSON.stringify(jqXHR));
     	        }
     	      });
     });

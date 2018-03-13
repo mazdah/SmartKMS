@@ -24,7 +24,9 @@ import org.springframework.validation.MessageCodesResolver;
 import org.springframework.validation.Validator;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
+import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -129,21 +131,26 @@ public class SKMSMvcConfig implements WebMvcConfigurer {
 		return factory.createMultipartConfig();
 	}
 	
+//	@Bean(name = "multipartResolver")
+//	public CommonsMultipartResolver multipartResolver() {
+//		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+//		resolver.setDefaultEncoding("utf-8");
+//		resolver.setMaxUploadSize(1024^4);
+//		resolver.setMaxUploadSizePerFile(1024^3);
+//		
+//		try {
+//			logger.debug("##### tempDir = " + tempDir);
+//			resolver.setUploadTempDir(new FileSystemResource(tempDir));
+//		} catch (IOException ioe) {
+//			logger.debug("IOException : " + ioe.getLocalizedMessage());
+//		}
+//		
+//		return resolver;
+//	}
+	
 	@Bean
-	public CommonsMultipartResolver multipartResolver() {
-		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		resolver.setDefaultEncoding("utf-8");
-		resolver.setMaxUploadSize(1024^4);
-		resolver.setMaxUploadSizePerFile(1024^3);
-		
-		try {
-			logger.debug("##### tempDir = " + tempDir);
-			resolver.setUploadTempDir(new FileSystemResource(tempDir));
-		} catch (IOException ioe) {
-			logger.debug("IOException : " + ioe.getLocalizedMessage());
-		}
-		
-		return resolver;
+	public MultipartResolver multipartResolver() {
+		return new StandardServletMultipartResolver();
 	}
 	
 	@Bean
