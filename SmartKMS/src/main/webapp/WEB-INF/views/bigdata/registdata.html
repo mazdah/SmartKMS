@@ -19,10 +19,12 @@
   <link rel="stylesheet" href="css/select2/select2.min.css">
 </head>
 <body>
-	<div class="form-group">
+	<!-- <form id="fileupload" action="/SmartKMS/fileupload" method="POST" enctype="multipart/form-data"> -->
+	<form id="fileupload">
 	<label>Index Name</label>
 	<br>
-	<select class="form-control select2" style="width: 50%;">
+	<div class="form-group _indexsel">
+	<select class="form-control select2" name="indexName" style="width: 40%;">
                   <option selected="selected">Alabama</option>
                   <option>Alaska</option>
                   <option>California</option>
@@ -31,18 +33,30 @@
                   <option>Texas</option>
                   <option>Washington</option>
                 </select>
+    <button type="button" class="btn btn-primary _createindex">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>새 Index 만들기</span>
+                </button>
+    </div>
+    <div class="form-group _indexinput">
+    <input class="form-control col-md-4" type="text" name="indexName" placeholder="Index 이름" style="width: 40%;">
+    <button type="button" class="btn btn-primary _selectindex col-md-1" >
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>기존 Index 선택</span>
+                </button>
+    </div>  
     <br>
     <br>
+    <div class="form-group">
     <label>Type</label>
     <br>
-    <input class="form-control" type="text" placeholder="Input Type" style="width: 50%;">
+    <input class="form-control" type="text" name="type" placeholder="Input Type" style="width: 50%;">
 	</div>
 	<br>
 	<br>
 	<div>
 	<label>Data file upload</label>
 	<!-- The file upload form used as target for the file upload widget -->
-    <form id="fileupload" action="/SmartKMS/fileupload" method="POST" enctype="multipart/form-data">
         <!-- Redirect browsers with JavaScript disabled to the origin page -->
         <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
@@ -52,7 +66,8 @@
                 <span class="btn btn-success fileinput-button">
                     <i class="glyphicon glyphicon-plus"></i>
                     <span>Add files...</span>
-                    <input type="file" name="files[]" multiple>
+                    <!-- <input type="file" name="files[]" multiple> -->
+                    <input type="file" name="file">
                 </span>
                 <button type="button" class="btn btn-primary _start">
                     <i class="glyphicon glyphicon-upload"></i>
@@ -111,7 +126,7 @@
         </td>
         <td>
             {% if (!i && !o.options.autoUpload) { %}
-                <button class="btn btn-primary start" disabled>
+                <button class="btn btn-primary _start" disabled>
                     <i class="glyphicon glyphicon-upload"></i>
                     <span>Start</span>
                 </button>

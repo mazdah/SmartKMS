@@ -3,9 +3,12 @@ package com.innotree.smartkms.config;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.MultipartConfigElement;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -115,20 +118,30 @@ public class SKMSMvcConfig implements WebMvcConfigurer {
 		return resolver;
 	}
 	
-//	@Value("${file.temp.dir}")
-//	private String tempDir;
+	@Value("${file.temp.dir}")
+	private String tempDir;
+	
+	@Bean
+	public MultipartConfigElement multipartConfigElement() {
+		MultipartConfigFactory factory = new MultipartConfigFactory();
+		factory.setMaxFileSize("1024MB");
+		factory.setMaxRequestSize("1024MB");
+		return factory.createMultipartConfig();
+	}
 	
 	@Bean
 	public CommonsMultipartResolver multipartResolver() {
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 		resolver.setDefaultEncoding("utf-8");
-		resolver.setMaxUploadSize(-1);
+		resolver.setMaxUploadSize(1024^4);
+		resolver.setMaxUploadSizePerFile(1024^3);
 		
-//		try {
-//			resolver.setUploadTempDir(new FileSystemResource(tempDir));
-//		} catch (IOException ioe) {
-//			logger.debug("IOException : " + ioe.getLocalizedMessage());
-//		}
+		try {
+			logger.debug("##### tempDir = " + tempDir);
+			resolver.setUploadTempDir(new FileSystemResource(tempDir));
+		} catch (IOException ioe) {
+			logger.debug("IOException : " + ioe.getLocalizedMessage());
+		}
 		
 		return resolver;
 	}

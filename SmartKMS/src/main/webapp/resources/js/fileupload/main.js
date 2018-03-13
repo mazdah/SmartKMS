@@ -17,8 +17,8 @@ $(function () {
     // Initialize the jQuery File Upload widget:
     $('#fileupload').fileupload({
         // Uncomment the following to send cross-domain cookies:
-        //xhrFields: {withCredentials: true},
-        url: 'server/php/'
+        xhrFields: {withCredentials: true},
+        url: '/SmartKMS/fileupload'
     });
 
     // Enable iframe cross-domain access via redirect option:
@@ -34,19 +34,19 @@ $(function () {
     if (window.location.hostname === 'blueimp.github.io') {
         // Demo settings:
         $('#fileupload').fileupload('option', {
-            url: '//jquery-file-upload.appspot.com/',
+            url: '/SmartKMS/fileupload',
             // Enable image resizing, except for Android and Opera,
             // which actually support image resizing, but fail to
             // send Blob objects via XHR requests:
             disableImageResize: /Android(?!.*Chrome)|Opera/
                 .test(window.navigator.userAgent),
-            maxFileSize: 999000,
-            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i
+            maxFileSize: 1000000000,
+            acceptFileTypes: /(\.|\/)(xlsx?|csv)$/i
         });
         // Upload server status check for browsers with CORS support:
         if ($.support.cors) {
             $.ajax({
-                url: '//jquery-file-upload.appspot.com/',
+                url: '/SmartKMS/fileupload',
                 type: 'HEAD'
             }).fail(function () {
                 $('<div class="alert alert-danger"/>')
@@ -60,7 +60,7 @@ $(function () {
         $('#fileupload').addClass('fileupload-processing');
         $.ajax({
             // Uncomment the following to send cross-domain cookies:
-            //xhrFields: {withCredentials: true},
+            xhrFields: {withCredentials: true},
             url: $('#fileupload').fileupload('option', 'url'),
             dataType: 'json',
             context: $('#fileupload')[0]
