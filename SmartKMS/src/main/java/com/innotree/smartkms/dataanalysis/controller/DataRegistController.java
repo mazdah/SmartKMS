@@ -3,9 +3,13 @@ package com.innotree.smartkms.dataanalysis.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,10 +93,9 @@ public class DataRegistController {
 	
 	@DeleteMapping("/filedelete")
 	@ResponseBody
-	public synchronized Map<String, Object> fileDelete() {
-		Map <String, Object> resultMap = new HashMap <String, Object>();
-		
+	public synchronized Map<String, Object> fileDelete(HttpServletRequest req) {
 		logger.debug("##### file delete");
+		Map <String, Object> resultMap = new HashMap <String, Object>();
 		
 		return resultMap;
 	}

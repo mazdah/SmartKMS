@@ -21,7 +21,22 @@ $(function () {
     
     $('#fileupload').bind('fileuploaddestroy', function (e, data) {
     		/* ... */
-    		alert(data.url + " : " + data.type);
+    		var fileName = data.context.find('a[download]').attr('download');
+    	
+	    	if (confirm("Are you sure you want to delete file : " + fileName + "?")) {
+	    		$.ajax({
+	    		    url: data.url,
+	    		    dataType: "text",
+	    		    type: data.type,
+	    		    processData: false,
+	    		    contentType: 'application/json',
+	    		    success: function(data) {
+	    		      console.log(data); }
+	    		  });
+	    	} else {
+	    		return false;
+	    	}
+    		  
     	});
 });
 
