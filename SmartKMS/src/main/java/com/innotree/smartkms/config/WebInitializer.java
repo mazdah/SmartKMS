@@ -36,8 +36,13 @@ public class WebInitializer implements WebApplicationInitializer {
 	
 	Logger logger = LoggerFactory.getLogger(WebInitializer.class);
  
-	private String tempDir = "/Volumes/Storage2/elastic_data/temp";
-	private int maxUploadSize = 1024 * 1024 * 1024;
+	@Value("${file.temp.dir}")
+	private String tempDir;
+//	private String tempDir = "/Volumes/MacintoshHD2/elastic_data/temp";
+	
+	@Value("${max.upload.size}")
+	private int maxUploadSize;
+//	private int maxUploadSize = 1024 * 1024 * 1024;
 	
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {

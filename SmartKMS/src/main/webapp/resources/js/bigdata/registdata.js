@@ -2,27 +2,6 @@ var isCreateIndex = true;
 
 $("._indexsel").hide();
 
-$(function () {
-    'use strict';
-
-    // Initialize the jQuery File Upload widget:
-    $('#fileupload').fileupload({
-        // Uncomment the following to send cross-domain cookies:
-        xhrFields: {withCredentials: true},
-        url: '/SmartKMS/fileupload'
-    });
-
-    // Enable iframe cross-domain access via redirect option:
-    $('#fileupload').fileupload(
-        'option',
-        'redirect',
-        window.location.href.replace(
-            /\/[^\/]*$/,
-            '/cors/result.html?%s'
-        )
-    );
-});
-
 $(document).ready(function () {
 	//Initialize Select2 Elements
     $(".select2").select2()

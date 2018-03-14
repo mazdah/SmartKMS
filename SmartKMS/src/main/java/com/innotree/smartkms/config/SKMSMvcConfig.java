@@ -55,6 +55,14 @@ public class SKMSMvcConfig implements WebMvcConfigurer {
 
 	Logger logger = LoggerFactory.getLogger(SKMSMvcConfig.class);
 
+	@Value("${file.temp.dir}")
+	private String tempDir;
+//	private String tempDir = "/Volumes/MacintoshHD2/elastic_data/temp";
+	
+	@Value("${max.upload.size}")
+	private int maxUploadSize;
+//	private int maxUploadSize = 1024 * 1024 * 1024;
+	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		// TODO Auto-generated method stub
@@ -120,15 +128,11 @@ public class SKMSMvcConfig implements WebMvcConfigurer {
 		return resolver;
 	}
 	
-	@Value("${file.temp.dir}")
-	private String tempDir;
-	
 	@Bean
 	public MultipartConfigElement multipartConfigElement() {
-		MultipartConfigFactory factory = new MultipartConfigFactory();
-		factory.setMaxFileSize("1024MB");
-		factory.setMaxRequestSize("1024MB");
-		return factory.createMultipartConfig();
+		MultipartConfigElement multipartConfigElement = new MultipartConfigElement(tempDir, 
+				maxUploadSize, maxUploadSize * 2, maxUploadSize / 2);
+		return multipartConfigElement;
 	}
 	
 //	@Bean(name = "multipartResolver")
