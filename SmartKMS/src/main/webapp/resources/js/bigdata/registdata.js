@@ -79,4 +79,8 @@ $(document).ready(function () {
     		$("._indexform").empty();
     		$("._indexform").append(indexTemplate);
     });
+    
+    $(document).on("click", ".delete", function () {
+    		alert("Click delete : " + $(".delete").attr("data-type"));
+    });
 });

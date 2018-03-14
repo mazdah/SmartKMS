@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,18 +43,32 @@ public class DataRegistController {
 		logger.debug("##### indexName = " + indexName);
 		logger.debug("##### type = " + type);
 		logger.debug("##### File Name = " + file.getOriginalFilename());
+		logger.debug("##### File size = " + file.getSize());
+		
+		String orgFileName = file.getOriginalFilename();
+		long fileSize = file.getSize();
+		
+		String fileExt = orgFileName.substring(orgFileName.lastIndexOf(".") + 1, orgFileName.length());
 		
 		// jquery file upload 플러그인의 스펙에 맞춘 리턴 처리
 		Map <String, Object> resultMap = new HashMap <String, Object>();
 		Map <String, Object> fileMap = new HashMap <String, Object>();
 		
 		List<Map<String, Object>> files = new ArrayList<Map<String, Object>>();
-		fileMap.put("name", file.getOriginalFilename());
-		fileMap.put("size", new Long(file.getSize()));
+		fileMap.put("name", orgFileName);
+		fileMap.put("size", Long.valueOf(fileSize));
 		fileMap.put("url", "");
-		fileMap.put("thumbnailUrl", "");
-		fileMap.put("deleteUrl", "");
-		fileMap.put("size", "DELETE");
+		
+		if ("xlsx".equalsIgnoreCase(fileExt)) {
+			fileMap.put("thumbnailUrl", "/SmartKMS/images/icons/xlsx.png");
+		} else if ("xls".equalsIgnoreCase(fileExt)) {
+			fileMap.put("thumbnailUrl", "/SmartKMS/images/icons/xls.png");
+		} else {
+			fileMap.put("thumbnailUrl", "/SmartKMS/images/icons/csv.png");
+		}
+		
+		fileMap.put("deleteUrl", "/SmartKMS/filedelete");
+		fileMap.put("deleteType", "DELETE");
 		
 		files.add(fileMap);
 		
@@ -68,6 +83,16 @@ public class DataRegistController {
 			// TODO Auto-generated catch block
 			logger.debug(e.getLocalizedMessage());
 		}
+		
+		return resultMap;
+	}
+	
+	@DeleteMapping("/filedelete")
+	@ResponseBody
+	public synchronized Map<String, Object> fileDelete() {
+		Map <String, Object> resultMap = new HashMap <String, Object>();
+		
+		logger.debug("##### file delete");
 		
 		return resultMap;
 	}
