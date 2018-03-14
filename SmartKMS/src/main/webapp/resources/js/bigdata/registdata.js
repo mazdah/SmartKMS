@@ -18,6 +18,11 @@ $(function () {
         'redirect',
         '/SmartKMS/result'
     );
+    
+    $('#fileupload').bind('fileuploaddestroy', function (e, data) {
+    		/* ... */
+    		alert(data.url + " : " + data.type);
+    	});
 });
 
 $(document).ready(function () {
@@ -78,9 +83,5 @@ $(document).ready(function () {
 	        + '</button>';
     		$("._indexform").empty();
     		$("._indexform").append(indexTemplate);
-    });
-    
-    $(document).on("click", ".delete", function () {
-    		alert("Click delete : " + $(".delete").attr("data-type"));
     });
 });
