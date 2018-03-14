@@ -128,12 +128,12 @@ public class SKMSMvcConfig implements WebMvcConfigurer {
 		return resolver;
 	}
 	
-	@Bean
-	public MultipartConfigElement multipartConfigElement() {
-		MultipartConfigElement multipartConfigElement = new MultipartConfigElement(tempDir, 
-				maxUploadSize, maxUploadSize * 2, maxUploadSize / 2);
-		return multipartConfigElement;
-	}
+//	@Bean
+//	public MultipartConfigElement multipartConfigElement() {
+//		MultipartConfigElement multipartConfigElement = new MultipartConfigElement(tempDir, 
+//				maxUploadSize, maxUploadSize * 2, maxUploadSize / 2);
+//		return multipartConfigElement;
+//	}
 	
 //	@Bean(name = "multipartResolver")
 //	public CommonsMultipartResolver multipartResolver() {

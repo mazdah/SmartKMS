@@ -1,5 +1,6 @@
 package com.innotree.smartkms.config;
 
+import java.io.IOException;
 import java.util.Set;
 
 import javax.servlet.FilterRegistration;
@@ -13,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.ResourcePropertySource;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -35,14 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 public class WebInitializer implements WebApplicationInitializer {
 	
 	Logger logger = LoggerFactory.getLogger(WebInitializer.class);
- 
-	@Value("${file.temp.dir}")
-	private String tempDir;
-//	private String tempDir = "/Volumes/MacintoshHD2/elastic_data/temp";
-	
-	@Value("${max.upload.size}")
-	private int maxUploadSize;
-//	private int maxUploadSize = 1024 * 1024 * 1024;
 	
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
@@ -61,10 +57,23 @@ public class WebInitializer implements WebApplicationInitializer {
     		dispatcher.setLoadOnStartup(1);
     		dispatcher.addMapping("/");
 
-    		MultipartConfigElement multipartConfigElement = new MultipartConfigElement(tempDir, 
-    				maxUploadSize, maxUploadSize * 2, maxUploadSize / 2);
-    		
-    		dispatcher.setMultipartConfig(multipartConfigElement);
+    		// WebApplicationInitializer 구현체에서 properties 파일 사용하는 방법
+    		ConfigurableEnvironment environment = null;
+    		try {
+    			environment = context.getEnvironment();
+    			environment.getPropertySources().addFirst(new ResourcePropertySource(new ClassPathResource("common.properties")));
+    			   			
+    			String tempDir = environment.getProperty("file.temp.dir");
+    			int maxUploadSize = new Integer(environment.getProperty("max.upload.size"));
+    			
+    			MultipartConfigElement multipartConfigElement = new MultipartConfigElement(tempDir, 
+        				maxUploadSize, maxUploadSize * 2, maxUploadSize / 2);
+        		
+        		dispatcher.setMultipartConfig(multipartConfigElement);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.debug(e.getLocalizedMessage());
+		}
     		
     		/*
          * 인코딩 필터 등록
