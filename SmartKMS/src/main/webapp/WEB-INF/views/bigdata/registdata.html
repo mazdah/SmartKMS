@@ -34,6 +34,8 @@
 <!-- CSS adjustments for browsers with JavaScript disabled -->
 <noscript><link rel="stylesheet" href="css/fileupload/jquery.fileupload-noscript.css"></noscript>
 <noscript><link rel="stylesheet" href="css/fileupload/jquery.fileupload-ui-noscript.css"></noscript>
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="css/icheck/all.css">
 </head>
 <body>
 <div class="container col-md-7">
@@ -41,18 +43,25 @@
     <form id="fileupload" action="/SmartKMS/fileupload" method="POST" enctype="multipart/form-data">
     		<label>Index Name</label>
     		<div class="form-group _indexform">
-		<input class="form-control _indexName col-md-5" type="text" name="indexName" placeholder="Index 이름" style="width: 40%;">
-	    <button type="button" class="btn btn-primary _selectindex col-md-2" >
-	                    <i class="glyphicon glyphicon-upload"></i>
-	                    <span>기존 Index 선택</span>
-	                </button>
+			<input class="form-control _indexName col-md-5" type="text" name="indexName" placeholder="Index 이름" style="width: 40%;">
+		    <button type="button" class="btn btn-primary _selectindex col-md-2" >
+		                    <i class="glyphicon glyphicon-upload"></i>
+		                    <span>기존 Index 선택</span>
+		                </button>
 	    </div>
 	    <br>
 	    <br>
 	    <div class="form-group">
-	    <label>Type</label>
-	    <br>
-	    <input class="form-control _type" type="text" name="type" placeholder="Input Type" style="width: 50%;">
+		    <label>Type</label>
+		    <br>
+		    <input class="form-control _type" type="text" name="type" placeholder="Input Type" style="width: 50%;">
+		</div>
+		<br>
+		<div class="form-group">
+		    <label>
+	        <input type="checkbox" name="isImport" class="minimal" checked>
+	        Import to Elasticsearch
+	        </label>
 		</div>
 		<!-- The global progress state -->
         <div class="col-lg-6 fileupload-progress fade">
@@ -211,6 +220,8 @@
 <!-- The File Upload user interface plugin -->
 <script src="js/fileupload/jquery.fileupload-ui.js"></script>
 <script src="js/bigdata/registdata.js"></script>
+<!-- iCheck 1.0.1 -->
+<script src="js/icheck/icheck.min.js"></script>
 <!-- The XDomainRequest Transport is included for cross-domain file deletion for IE 8 and IE 9 -->
 <!--[if (gte IE 8)&(lt IE 10)]>
 <script src="js/cors/jquery.xdr-transport.js"></script>

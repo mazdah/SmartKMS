@@ -10,6 +10,7 @@ import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.slf4j.LoggerFactory;
@@ -91,17 +92,35 @@ public class ElasticHelper {
 		  }
 	}
 	
-	public static void makeSimpleIndex (Map<String, String> indexMap) {
+	public static Map<String, Object> makeSimpleIndex (Map<String, Object> indexMap) {
 		Client client = ElasticClientHelper.newTransportClient();
 		IndicesAdminClient indicesClient = client.admin().indices();
 		
-		CreateIndexResponse response = client.admin().indices().prepareCreate("real_estate")
+		String indexName = (String)indexMap.get("indexName");
+		Integer shardNum = (Integer)indexMap.get("shardNum");
+		Integer replicaNum = (Integer)indexMap.get("replicaNum");
+		
+		
+		CreateIndexResponse response = client.admin().indices().prepareCreate(indexName)
         .setSettings(Settings.builder()             
-                .put("index.number_of_shards", 3)
-                .put("index.number_of_replicas", 0)
+                .put("index.number_of_shards", shardNum)
+                .put("index.number_of_replicas", replicaNum)
         )
         .get();
 		
+		String index = response.index();
+		boolean ack = response.isAcknowledged();
+		TransportAddress address = response.remoteAddress();
 		
+		Map <String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("indexName", index);
+		resultMap.put("ack", ack);
+		resultMap.put("address", address);
+		
+		return resultMap;
+	}
+	
+	public static boolean importData (String rowStr) {
+		return true;
 	}
 }

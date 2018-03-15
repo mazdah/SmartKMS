@@ -29,16 +29,61 @@ $(function () {
 	    		return false;
 	    	}
     	});
+    
+    $('#fileupload').bind('fileuploaddone', function (e, data) {
+    		// data.result
+        // data.textStatus;
+        // data.jqXHR;
+  
+    		// 만일 Import Elasticsearch가 체크되어있다면 logn polling 수행
+    		var isImport = data.result.files[0].isImport;
+    		
+    		if (isImport == true) {
+    			importData(data.result.files[0].name);
+    		}
+    	});
+    
+    function importData(fileName) {
+    		$.ajax({
+            url: '/SmartKMS/startimport?fileName=' + fileName,
+            type: 'GET',
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function(data, status, jqXHR) {
+                poll();
+            },
+            error: function (jqXHR, status) {
+            		alert("[" + status + "] data import started Fail!\n\n" + JSON.stringify(jqXHR));
+            }
+        })
+    }
+    
+    function poll() {
+        $.ajax({
+            url: '/SmartKMS/checkprocess',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data, status, jqXHR) {
+                console.log('success');
+            },
+            error: function (jqXHR, status) {
+            	
+            },
+            timeout: 3000,
+            complete: setTimeout(function() { poll(); }, 6000)
+        })
+    }
 });
 
 $(document).ready(function () {
 	//Initialize Select2 Elements
     $(".select2").select2();
     
-//    $(document).on("click", "._deleteFile", function (event) {
-//    		alert("delete clicked!");
-//    	
-//    });
+  //iCheck for checkbox and radio inputs
+    $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+      checkboxClass: 'icheckbox_minimal-blue',
+      radioClass   : 'iradio_minimal-blue'
+    })
     
     $(document).on("click", "._createindex", function () {
 	    	var indexTemplate = '<input class="form-control _indexName col-md-5" type="text" name="indexName" placeholder="Index 이름" style="width: 40%;">'
