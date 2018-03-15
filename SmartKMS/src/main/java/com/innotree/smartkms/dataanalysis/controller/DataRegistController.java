@@ -152,6 +152,9 @@ public class DataRegistController {
 		logger.debug("##### startImport");
 		Map <String, Object> resultMap = new HashMap <String, Object>();
 		
+		totalLine = 0;
+		importedLine = 0;
+		
 		File excelFile = new File(saveDir + "/" + fileName);
 		
 		try (
@@ -161,11 +164,14 @@ public class DataRegistController {
 		          .bufferSize(4096)
 		          .open(is)) {			
 		    for (Sheet sheet : workbook){
+		      totalLine = sheet.getLastRowNum();
 		      logger.debug("##### sheet name = " + sheet.getSheetName());
-		      logger.debug("##### totalLine = " + sheet.getLastRowNum());
+		      logger.debug("##### totalLine = " + totalLine);
+		      
 		      for (Row r : sheet) {
+		    	  	importedLine++;
 		        for (Cell c : r) {
-		          logger.debug("##### values = " + c.getStringCellValue());
+		          //logger.debug("##### values = " + c.getStringCellValue());
 		        }
 		      }
 		    }

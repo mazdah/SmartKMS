@@ -36,8 +36,61 @@
 <noscript><link rel="stylesheet" href="css/fileupload/jquery.fileupload-ui-noscript.css"></noscript>
 <!-- iCheck for checkboxes and radio inputs -->
 <link rel="stylesheet" href="css/icheck/all.css">
+ <!-- Theme style -->
+ <link rel="stylesheet" href="css/AdminLTE/AdminLTE.min.css">
+
+<style>
+    .example-modal .modal {
+      position: relative;
+      top: auto;
+      bottom: auto;
+      right: auto;
+      left: auto;
+      display: block;
+      z-index: 1;
+    }
+
+    .example-modal .modal {
+      background: transparent !important;
+    }
+ </style>
 </head>
 <body>
+<!-- /.modal-dialog -->
+<div class="modal modal-success fade" id="modal-success">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Excel Data Importing&hellip;</h4>
+      </div>
+      <div class="modal-body">
+      	<div class="_modal-message">
+        <p>현재 업로드한 엑셀 파일의 데이터를 Elasticsearch로 import 하고 있습니다.</p>
+        <p>이 창을 닫으면 import 작업은 계속되나 진행 상황을 확인할 수 없습니다.</p>
+        </div>
+        <br>
+        <br>
+        	  <div>
+	        <div class="progress" style="background-color: black;">
+	          <div class="progress-bar progress-bar-primary progress-bar-striped _progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+	            <span class="sr-only">Processing&hellip;</span>
+	          </div>
+	        </div>
+	        <div class="pull-right">
+	        <span class="_now">0</span> / <span class="_total">0</span>
+	        </div>
+	      </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-dismiss="modal">닫 기</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+</div>
+<!-- /.modal-dialog -->
 <div class="container col-md-7">
     <!-- The file upload form used as target for the file upload widget -->
     <form id="fileupload" action="/SmartKMS/fileupload" method="POST" enctype="multipart/form-data">

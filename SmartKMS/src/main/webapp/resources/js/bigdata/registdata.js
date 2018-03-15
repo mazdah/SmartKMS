@@ -40,6 +40,8 @@ $(function () {
     		
     		if (isImport == true) {
     			importData(data.result.files[0].name);
+    			poll();
+    			$("#modal-success").modal();
     		}
     	});
     
@@ -50,7 +52,7 @@ $(function () {
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             success: function(data, status, jqXHR) {
-                poll();
+
             },
             error: function (jqXHR, status) {
             		alert("[" + status + "] data import started Fail!\n\n" + JSON.stringify(jqXHR));
@@ -59,18 +61,37 @@ $(function () {
     }
     
     function poll() {
-        $.ajax({
+        var $req = $.ajax({
             url: '/SmartKMS/checkprocess',
             type: 'GET',
             dataType: 'json',
             success: function(data, status, jqXHR) {
-                console.log('success');
+                console.log(JSON.stringify(data));
+                
+                var total = data.totalLine;
+                var now = data.importedLine;
+                
+                if (total > 0 && now > total) {
+                		$("._modal-message").empty();
+                		$("._modal-message").append("<p>데이터 import 작업이 모두 완료되었습니다.</p><p>창을 닫고 다음 작업을 진행해도 좋습니다.</p>");
+                		console.log("progress end!!!");
+                		
+                		$req.abort();
+                		$req = null;
+                }
+                
+                $("._total").text(total);
+                $("._now").text(now);
+                
+                var progressValue = (now / total * 100) + "";
+                $("._progress").attr("aria-valuenow", progressValue);
+                $("._progress").css("width", progressValue + "%");
             },
             error: function (jqXHR, status) {
             	
             },
             timeout: 3000,
-            complete: setTimeout(function() { poll(); }, 6000)
+            complete: setTimeout(function() { poll(); }, 500)
         })
     }
 });
