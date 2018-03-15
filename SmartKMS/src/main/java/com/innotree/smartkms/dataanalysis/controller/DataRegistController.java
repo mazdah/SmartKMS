@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,8 +72,8 @@ public class DataRegistController {
 			fileMap.put("thumbnailUrl", "/SmartKMS/images/icons/csv.png");
 		}
 		
-		fileMap.put("deleteUrl", "/SmartKMS/filedelete");
-		fileMap.put("deleteType", "DELETE");
+		fileMap.put("deleteUrl", "/SmartKMS/filedelete?fileName=" + orgFileName);
+		fileMap.put("deleteType", "GET");
 		
 		files.add(fileMap);
 		
@@ -91,11 +92,29 @@ public class DataRegistController {
 		return resultMap;
 	}
 	
-	@DeleteMapping("/filedelete")
+	@GetMapping("/filedelete")
 	@ResponseBody
-	public synchronized Map<String, Object> fileDelete(HttpServletRequest req) {
-		logger.debug("##### file delete");
+	public synchronized Map<String, Object> fileDelete(@RequestParam("fileName") String fileName) {
+		logger.debug("##### file delete : fileName = " + fileName);
+
+		
 		Map <String, Object> resultMap = new HashMap <String, Object>();
+		
+		File file = new File(saveDir + "/" + fileName);
+		
+		if (file.exists()) {
+			
+			if (file.delete()) {
+				resultMap.put("message", "file delete Fail! " + fileName + " file not deleted!");
+				resultMap.put("result", false);
+			} else {
+				resultMap.put("message", "file delete Success! " + fileName + " file deleted!");
+				resultMap.put("result", true);
+			}
+		} else {
+			resultMap.put("message", "file delete Fail! " + fileName + " file not exist!");
+			resultMap.put("result", false);
+		}
 		
 		return resultMap;
 	}
