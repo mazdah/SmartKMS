@@ -148,7 +148,7 @@ public class DataRegistController {
 	
 	@GetMapping("/startimport")
 	@ResponseBody
-	public Map<String, Object> startImport(@RequestParam("fileName") String fileName) {
+	public synchronized Map<String, Object> startImport(@RequestParam("fileName") String fileName) {
 		logger.debug("##### startImport");
 		Map <String, Object> resultMap = new HashMap <String, Object>();
 		
@@ -182,81 +182,6 @@ public class DataRegistController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-//		try {
-//			OPCPackage pkg = OPCPackage.open(excelFile);
-//			XSSFWorkbook workbook = new XSSFWorkbook(pkg);
-//			
-//			XSSFReader reader = new XSSFReader(pkg);
-//			SharedStringsTable sst = reader.getSharedStringsTable();
-//			
-//			XMLReader parser = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
-//			ContentHandler handler = new SheetHandler(sst);
-//			parser.setContentHandler(handler);
-//			
-//			int i = 0;
-//			String sheetName;
-//			
-//			InputStream sheetStream;
-//			InputSource sheetSource;
-//			Iterator<InputStream> sheets = reader.getSheetsData();
-//			
-//			while(sheets.hasNext()) {
-//				Sheet sheet = workbook.getSheetAt(i);
-//				
-//				totalLine = sheet.getLastRowNum();
-//				logger.debug("##### totalline = " + totalLine);
-//				
-//				i++;
-//			}
-//			
-//		} catch (InvalidFormatException e1) {
-//			// TODO Auto-generated catch block
-//			logger.debug("InvalidFormatException : " + e1.getLocalizedMessage());
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			logger.debug("IOException : " + e.getLocalizedMessage());
-//		} catch (OpenXML4JException e) {
-//			// TODO Auto-generated catch block
-//			logger.debug("OpenXML4JException : " + e.getLocalizedMessage());
-//		} catch (SAXException e) {
-//			// TODO Auto-generated catch block
-//			logger.debug("SAXException : " + e.getLocalizedMessage());
-//		}
-		
-//		try {
-//			logger.debug("##### read excel start~");
-//			Workbook workbook = WorkbookFactory.create(excelFile);
-//			for(Sheet sheet: workbook) {
-//				totalLine = sheet.getLastRowNum();
-//	        		logger.debug("##### totalline = " + totalLine);
-//	        		
-//	//        		DataFormatter dataFormatter = new DataFormatter();
-//	//        		
-//	//        		Iterator<Row> rowIterator = sheet.rowIterator();
-//	//            while (rowIterator.hasNext()) {
-//	//                Row row = rowIterator.next();
-//	//
-//	//                // Now let's iterate over the columns of the current row
-//	//                Iterator<Cell> cellIterator = row.cellIterator();
-//	//
-//	//                while (cellIterator.hasNext()) {
-//	//                    Cell cell = cellIterator.next();
-//	//                    String cellValue = dataFormatter.formatCellValue(cell);
-//	//                }
-//	//            }
-//	        }
-//			
-//			resultMap.put("totalLine", new Long(totalLine));
-//			resultMap.put("message", "import started!");
-//		} catch (EncryptedDocumentException | InvalidFormatException | IOException e) {
-//			// TODO Auto-generated catch block
-//			logger.debug("Exception : " + e.getLocalizedMessage());
-//			
-//			resultMap.put("totalLine", new Long(0));
-//			resultMap.put("message", "import Fail : " + e.getLocalizedMessage());
-//		}
-		
 		return resultMap;
 	}
 	
@@ -303,6 +228,10 @@ public class DataRegistController {
 		resultMap.put("totalLine", new Long(totalLine));
 		resultMap.put("importedLine", new Long(importedLine));
 		
+		if (importedLine > totalLine) {
+		    totalLine = 0;
+			importedLine = 0;
+		}
 		
 		return resultMap;
 	}

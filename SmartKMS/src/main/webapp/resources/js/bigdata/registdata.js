@@ -39,9 +39,18 @@ $(function () {
     		var isImport = data.result.files[0].isImport;
     		
     		if (isImport == true) {
+    			$("._modal-message").empty();
+        		$("._modal-message").append("<p>현재 업로드한 엑셀 파일의 데이터를 Elasticsearch로 import 하고 있습니다.</p><p>작업이 끝날 때까지 페이지 이동이나 새로고침을 자제해주세요.</p><p>파일 이름 : <font color='#00FFFF'><strong>" + data.result.files[0].name + "</strong></font></p>");
+        		console.log("progress start!!!");
+        		
+        		$("._progress").attr("aria-valuenow", 0);
+            $("._progress").css("width", "0%");
+    			
     			importData(data.result.files[0].name);
     			poll();
-    			$("#modal-success").modal();
+    			$("#modal-success").modal({backdrop: 'static', keyboard: false});
+    			
+    			$("._close").attr("disabled","disabled");
     		}
     	});
     
@@ -60,7 +69,10 @@ $(function () {
         })
     }
     
+    var isContinue = true; 
     function poll() {
+    		
+    		var timeout;
         var $req = $.ajax({
             url: '/SmartKMS/checkprocess',
             type: 'GET',
@@ -70,20 +82,25 @@ $(function () {
                 
                 var total = data.totalLine;
                 var now = data.importedLine;
+
+                if (total > 0) {
+                		$("._total").text(total);
+                }                
+                $("._now").text(now);
                 
-                if (total > 0 && now > total) {
+                var progressValue = (now / total * 100) + "";
+                
+                if (now > total) {
+                		progressValue = 100;
+                		
                 		$("._modal-message").empty();
                 		$("._modal-message").append("<p>데이터 import 작업이 모두 완료되었습니다.</p><p>창을 닫고 다음 작업을 진행해도 좋습니다.</p>");
                 		console.log("progress end!!!");
                 		
-                		$req.abort();
-                		$req = null;
+                		$("._close").removeAttr("disabled");
+                		isContinue = false;
                 }
                 
-                $("._total").text(total);
-                $("._now").text(now);
-                
-                var progressValue = (now / total * 100) + "";
                 $("._progress").attr("aria-valuenow", progressValue);
                 $("._progress").css("width", progressValue + "%");
             },
@@ -91,9 +108,21 @@ $(function () {
             	
             },
             timeout: 3000,
-            complete: setTimeout(function() { poll(); }, 500)
-        })
+            complete: function () {
+            		if (isContinue == true) {
+            			timeout = setTimeout(function() { poll(); }, 500);
+            		} else {
+            			clearTimeout(timeout);
+	        	        	$req.abort();
+	        	    		$req = null;
+            		}
+            }
+        });
     }
+    
+    $("#modal-success").on('hidden.bs.modal', function (e) {
+    	  	location.reload();
+    	})
 });
 
 $(document).ready(function () {
