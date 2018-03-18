@@ -25,9 +25,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @Configuration
 @ComponentScan(basePackages= {"com.innotree.smartkms"}, useDefaultFilters=false, includeFilters= {@Filter(Service.class)})
-public class SKMSMySQLConfig {
+public class SKMSMyBatisConfig {
 	
-	private static final Logger logger = LoggerFactory.getLogger(SKMSMySQLConfig.class);
+	private static final Logger logger = LoggerFactory.getLogger(SKMSMyBatisConfig.class);
 	
 	@Primary
 	@Bean(name="mysqlDataSource", destroyMethod="close")
@@ -36,31 +36,19 @@ public class SKMSMySQLConfig {
 		return DataSourceBuilder.create().build();
 	}
 
-	@Bean(name = "slaveDataSource") 
-	@ConfigurationProperties(prefix = "spring.other.datasource") 
-	public DataSource slaveDataSource() { 
-		return DataSourceBuilder.create().build(); 
-	} 
-	
-	// MyBatis용
-//	@Bean(name = "routingDataSource") 
-//	public DataSource routingDataSource(@Qualifier("masterDataSource") DataSource masterDataSource, @Qualifier("slaveDataSource") DataSource slaveDataSource) { 
-//		ReplicationRoutingDataSource routingDataSource = new ReplicationRoutingDataSource(masterDataSource, null); 
-//		routingDataSource.addSlave(slaveDataSource); return routingDataSource; 
+//	@Bean(name = "slaveDataSource") 
+//	@ConfigurationProperties(prefix = "spring.other.datasource") 
+//	public DataSource slaveDataSource() { 
+//		return DataSourceBuilder.create().build(); 
 //	} 
 	
-	@Bean(name = "dataSource") 
-	public DataSource dataSource(@Qualifier("routingDataSource") DataSource routingDataSource) { 
-		return new LazyConnectionDataSourceProxy(routingDataSource); 
-	} 
-	
 	@Bean(name = "transactionManager") 
-	public PlatformTransactionManager transactionManager(@Qualifier("dataSource") DataSource dataSource) { 
+	public PlatformTransactionManager transactionManager(@Qualifier("mysqlDataSource") DataSource dataSource) { 
 		return new DataSourceTransactionManager(dataSource); 
 	} 
 	
 	@Bean(name = "sqlSessionFactory") 
-	public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource, ApplicationContext applicationContext) throws Exception { 
+	public SqlSessionFactory sqlSessionFactory(@Qualifier("mysqlDataSource") DataSource dataSource, ApplicationContext applicationContext) throws Exception { 
 		SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean(); 
 		sqlSessionFactoryBean.setDataSource(dataSource); 
 		sqlSessionFactoryBean.setMapperLocations(applicationContext.getResources("classpath:mapper/*.xml")); 
