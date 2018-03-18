@@ -8,7 +8,12 @@ import com.innotree.smartkms.elastic.model.DataFiles;
 
 public interface DataFilesRepository extends JpaRepository<DataFiles, Long> {
 	
-	List<DataFiles> findByOrgFileName (String orgFileName);
+	DataFiles findByOrgFileName (String orgFileName);
 	
-	DataFiles saveAndFlush(DataFiles dataFiles);
+	List<DataFiles> findByIsImport (boolean isImport);
+	
+	List<DataFiles> findByElasticIndex (String elasticIndex);
+	
+	List<DataFiles> findByElasticIndexAndElasticType (String elasticIndex, String elasticType);
+
 }
