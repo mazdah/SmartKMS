@@ -1,4 +1,4 @@
-package com.innotree.smartkms.elastic.model;
+package com.innotree.smartkms.datafiles.model;
 
 import java.util.Date;
 
@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,10 +17,7 @@ import lombok.ToString;
 
 @Entity
 @Table(name="datafiles")
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
+@Data
 public class DataFiles {
 	
 	@Id
@@ -34,7 +32,7 @@ public class DataFiles {
 	private String savedFileName;
 	
 	@Column(name="file_size")
-	private int fileSize;
+	private long fileSize;
 	
 	@Column(name="elastic_index")
 	private String elasticIndex;
@@ -51,7 +49,7 @@ public class DataFiles {
 	@Column(name="import_date")
 	private Date importDate;
 
-	public DataFiles(int fileId, String orgFileName, String savedFileName, int fileSize, String elasticIndex,
+	public DataFiles(int fileId, String orgFileName, String savedFileName, long fileSize, String elasticIndex,
 			String elasticType, boolean isImport, Date updateDate, Date importDate) {
 		super();
 		this.fileId = fileId;

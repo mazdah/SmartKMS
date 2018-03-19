@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,8 @@ import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
@@ -43,6 +46,8 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import com.innotree.smartkms.datafiles.model.DataFiles;
+import com.innotree.smartkms.datafiles.service.IDataFilesService;
 import com.monitorjbl.xlsx.StreamingReader;
 
 @Controller
@@ -50,6 +55,10 @@ import com.monitorjbl.xlsx.StreamingReader;
 public class DataRegistController {
 	
 	Logger logger = LoggerFactory.getLogger(DataRegistController.class);
+	
+	@Autowired
+	@Qualifier("dataFilesServiceImpl")
+	IDataFilesService dataFilesServiceImpl;
 
 	/**
 	 * 데이터 등록 - 엑셀 파일로 작성된 데이터 등록
@@ -111,6 +120,17 @@ public class DataRegistController {
 		try {
 			File excelFile = new File(saveDir + "/" + file.getOriginalFilename());
 			file.transferTo(excelFile);
+			
+			DataFiles dataFiles = new DataFiles();
+			dataFiles.setOrgFileName(orgFileName);
+			dataFiles.setFileSize(fileSize);
+			dataFiles.setImport(false);
+			dataFiles.setSavedFileName(orgFileName);
+			dataFiles.setUpdateDate(new Date());
+			dataFiles.setElasticIndex(indexName);
+			dataFiles.setElasticType(type);
+			
+			dataFilesServiceImpl.insertDataFiles(dataFiles);
 		} catch (IllegalStateException | IOException e) {
 			// TODO Auto-generated catch block
 			logger.debug(e.getLocalizedMessage());

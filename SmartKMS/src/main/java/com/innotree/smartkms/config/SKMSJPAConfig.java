@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class SKMSJPAConfig {
 	
 	@Bean(destroyMethod = "close")
-	@ConfigurationProperties(prefix = "spring.mysql.datasource")
+	@ConfigurationProperties(prefix = "spring.datasource")
 	public DataSource dataSourceJPA() {
 		return DataSourceBuilder.create().build();
 	}

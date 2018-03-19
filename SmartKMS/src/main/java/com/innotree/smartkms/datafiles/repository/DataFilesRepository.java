@@ -1,12 +1,13 @@
-package com.innotree.smartkms.elastic.repository;
+package com.innotree.smartkms.datafiles.repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-import com.innotree.smartkms.elastic.model.DataFiles;
+import com.innotree.smartkms.datafiles.model.DataFiles;
 
-public interface DataFilesRepository extends JpaRepository<DataFiles, Long> {
+public interface DataFilesRepository extends JpaRepository<DataFiles, Long>, QuerydslPredicateExecutor<DataFiles> {
 	
 	DataFiles findByOrgFileName (String orgFileName);
 	
