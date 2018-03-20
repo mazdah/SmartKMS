@@ -11,10 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Table(name="datafiles")
@@ -60,6 +56,9 @@ public class DataFiles implements Serializable {
 	
 	@Column(name="import_date")
 	private Date importDate;
+	
+	@Column(name="total_rows")
+	private int totalRows;
 
 	public DataFiles(int fileId, String orgFileName, String savedFileName, long fileSize, String elasticIndex,
 			String elasticType, boolean isImport, Date updateDate, Date importDate) {

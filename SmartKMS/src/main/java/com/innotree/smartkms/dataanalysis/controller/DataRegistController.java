@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.innotree.smartkms.datafiles.model.DataFiles;
 import com.innotree.smartkms.datafiles.repository.DataFilesRepository;
+import com.innotree.smartkms.elastic.DataParser;
 import com.monitorjbl.xlsx.StreamingReader;
 
 @Controller
@@ -167,17 +168,31 @@ public class DataRegistController {
 		    Workbook workbook = StreamingReader.builder()
 		          .rowCacheSize(100)
 		          .bufferSize(4096)
-		          .open(is)) {			
+		          .open(is)) {	
+			
+			List<String> keyList = new ArrayList<String>();
 		    for (Sheet sheet : workbook){
 		      totalLine = sheet.getLastRowNum();
 		      logger.debug("##### sheet name = " + sheet.getSheetName());
 		      logger.debug("##### totalLine = " + totalLine);
 		      
 		      for (Row r : sheet) {
-		    	  	importedLine++;
-		        for (Cell c : r) {
-		          //logger.debug("##### values = " + c.getStringCellValue());
+		    	  	Map<String, String> keyValMap = new HashMap<String, String>();
+		    	  	
+		    	  	int cellCnt = r.getLastCellNum();
+		        for (int i = 0; i < cellCnt; i++) {
+		          //logger.debug("##### values = " + c.getStringCellValue());    	
+		        		Cell c = r.getCell(i);
+		        		if (importedLine == 0) {
+		        			keyList.add(c.getStringCellValue());
+		        		} else {
+		        			keyValMap.put(keyList.get(i), c==null?"":c.getStringCellValue());
+		        		}
 		        }
+		        
+		        String jsonStr = DataParser.getJsonStringFromMap(keyValMap);
+		        logger.debug("##### " + jsonStr);
+		        importedLine++;
 		      }
 		    }
 		} catch (FileNotFoundException e) {
