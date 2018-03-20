@@ -8,28 +8,19 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.EncryptedDocumentException;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
-import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.eventusermodel.XSSFReader;
-import org.apache.poi.xssf.model.SharedStringsTable;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
@@ -38,16 +29,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import com.innotree.smartkms.datafiles.model.DataFiles;
-import com.innotree.smartkms.datafiles.service.IDataFilesService;
+import com.innotree.smartkms.datafiles.repository.DataFilesRepository;
 import com.monitorjbl.xlsx.StreamingReader;
 
 @Controller
@@ -57,8 +41,7 @@ public class DataRegistController {
 	Logger logger = LoggerFactory.getLogger(DataRegistController.class);
 	
 	@Autowired
-	@Qualifier("dataFilesServiceImpl")
-	IDataFilesService dataFilesServiceImpl;
+	DataFilesRepository dataFilesRepository;
 
 	/**
 	 * 데이터 등록 - 엑셀 파일로 작성된 데이터 등록
@@ -118,19 +101,21 @@ public class DataRegistController {
 		// 1. 저장할 디렉토리 생성
 		// 2.파일 저장 : file.transgerTo (저장할 디렉토리)
 		try {
-			File excelFile = new File(saveDir + "/" + file.getOriginalFilename());
+			String filePath = saveDir + "/" + file.getOriginalFilename();
+			File excelFile = new File(filePath);
 			file.transferTo(excelFile);
 			
 			DataFiles dataFiles = new DataFiles();
 			dataFiles.setOrgFileName(orgFileName);
+			dataFiles.setFilePath(filePath);
 			dataFiles.setFileSize(fileSize);
 			dataFiles.setImport(false);
 			dataFiles.setSavedFileName(orgFileName);
-			dataFiles.setUpdateDate(new Date());
+			dataFiles.setUploadDate(new Date());
 			dataFiles.setElasticIndex(indexName);
 			dataFiles.setElasticType(type);
 			
-			dataFilesServiceImpl.insertDataFiles(dataFiles);
+			dataFilesRepository.saveAndFlush(dataFiles);
 		} catch (IllegalStateException | IOException e) {
 			// TODO Auto-generated catch block
 			logger.debug(e.getLocalizedMessage());

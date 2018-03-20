@@ -1,5 +1,6 @@
 package com.innotree.smartkms.datafiles.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -18,8 +19,13 @@ import lombok.ToString;
 @Entity
 @Table(name="datafiles")
 @Data
-public class DataFiles {
+public class DataFiles implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@Column(name="file_id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -30,6 +36,9 @@ public class DataFiles {
 	
 	@Column(name="saved_file_name")
 	private String savedFileName;
+	
+	@Column(name="file_path")
+	private String filePath;
 	
 	@Column(name="file_size")
 	private long fileSize;
@@ -42,6 +51,9 @@ public class DataFiles {
 	
 	@Column(name="is_import")
 	private boolean isImport;
+	
+	@Column(name="upload_date")
+	private Date uploadDate;
 	
 	@Column(name="update_date")
 	private Date updateDate;
