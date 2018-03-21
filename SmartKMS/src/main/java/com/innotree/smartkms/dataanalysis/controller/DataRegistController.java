@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.innotree.smartkms.datafiles.model.DataFiles;
 import com.innotree.smartkms.datafiles.repository.DataFilesRepository;
 import com.innotree.smartkms.elastic.DataParser;
+import com.innotree.smartkms.elastic.ElasticHelper;
 import com.monitorjbl.xlsx.StreamingReader;
 
 @Controller
@@ -191,7 +192,7 @@ public class DataRegistController {
 		        }
 		        
 		        String jsonStr = DataParser.getJsonStringFromMap(keyValMap);
-		        logger.debug("##### " + jsonStr);
+		        //logger.debug("##### " + jsonStr);
 		        importedLine++;
 		      }
 		    }
@@ -254,6 +255,12 @@ public class DataRegistController {
 		}
 		
 		return resultMap;
+	}
+	
+	@GetMapping(value="/indices")
+	@ResponseBody
+	public List<String> getIndices() {
+		return ElasticHelper.getIndexList();
 	}
 	
 	@GetMapping(value="/result")

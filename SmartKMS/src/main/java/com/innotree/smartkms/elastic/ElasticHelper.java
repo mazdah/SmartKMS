@@ -1,18 +1,28 @@
 package com.innotree.smartkms.elastic;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.elasticsearch.action.admin.indices.alias.get.GetAliasesResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.cluster.metadata.AliasMetaData;
+import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.LoggerFactory;
 
 import org.slf4j.Logger;
@@ -94,7 +104,7 @@ public class ElasticHelper {
 	
 	public static Map<String, Object> makeSimpleIndex (Map<String, Object> indexMap) {
 		Client client = ElasticClientHelper.newTransportClient();
-		IndicesAdminClient indicesClient = client.admin().indices();
+//		IndicesAdminClient indicesClient = client.admin().indices();
 		
 		String indexName = (String)indexMap.get("indexName");
 		Integer shardNum = (Integer)indexMap.get("shardNum");
@@ -120,7 +130,52 @@ public class ElasticHelper {
 		return resultMap;
 	}
 	
-	public static boolean importData (String rowStr) {
-		return true;
+	public static IndexResponse importData (String id, String index, String type, String keyVals) {
+		Client client = ElasticClientHelper.newTransportClient();
+		IndexResponse response = client.prepareIndex(index, type, id)
+				.setSource(keyVals, XContentType.JSON)
+		        .get();
+
+		return response;
+	}
+	
+	public static BulkResponse importBulkData (String id, String index, String type, List<String> keyVals) {
+		Client client = ElasticClientHelper.newTransportClient();
+		BulkRequestBuilder bulkRequest = client.prepareBulk();
+		
+		int cnt = keyVals.size();
+		for (int i = 0; i < cnt; i++) {
+			String keyVal = keyVals.get(i);
+			
+			bulkRequest.add(client.prepareIndex(index, type, id)
+					.setSource(keyVal, XContentType.JSON)
+			        );
+		}
+		
+		
+		BulkResponse response = bulkRequest.get();
+		return response;
+	}
+	
+	public static List<String> getIndexList() {
+		List<String> indexList = new ArrayList<String>();
+		
+		Client client = ElasticClientHelper.newTransportClient();
+//		IndicesAdminClient indicesClient = client.admin().indices();
+		
+		GetAliasesResponse getAliasesResponse = client.admin().indices()
+		        .prepareGetAliases()
+		        .get();
+		
+		ImmutableOpenMap<String, List<AliasMetaData>> ioMap = getAliasesResponse.getAliases();
+		
+		for (String alias : ioMap.keys().toArray(String.class)) {
+			List<AliasMetaData> innerList = ioMap.get(alias);
+		    for (AliasMetaData meta : innerList) {		    		
+		    		indexList.add(meta.getAlias());
+		    }
+		}
+		
+		return indexList;
 	}
 }

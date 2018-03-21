@@ -129,6 +129,18 @@ $(document).ready(function () {
 	//Initialize Select2 Elements
     $(".select2").select2();
     
+    $.ajax({
+        url: '/SmartKMS/indices',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data, status, jqXHR) {
+            alert(JSON.stringify(data));
+        },
+        error: function (jqXHR, status) {
+        	
+        }
+    });
+    
   //iCheck for checkbox and radio inputs
     $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
       checkboxClass: 'icheckbox_minimal-blue',
