@@ -260,7 +260,15 @@ public class DataRegistController {
 	@GetMapping(value="/indices")
 	@ResponseBody
 	public List<String> getIndices() {
-		return ElasticHelper.getIndexList();
+		List<String> indexList = new ArrayList<String>();
+		
+		String[] indices = ElasticHelper.getIndexList();
+		
+		for(String index : indices) {
+			indexList.add(index);
+		}
+		
+		return indexList;
 	}
 	
 	@GetMapping(value="/result")

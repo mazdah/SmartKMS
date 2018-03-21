@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.elasticsearch.action.admin.indices.alias.get.GetAliasesResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -17,6 +18,7 @@ import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.cluster.metadata.AliasMetaData;
+import org.elasticsearch.cluster.metadata.IndexMetaData;
 import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -29,7 +31,7 @@ import org.slf4j.Logger;
 
 public class ElasticHelper {
 	
-	static Logger logger = LoggerFactory.getLogger(ElasticHelper.class);
+	private final static Logger logger = LoggerFactory.getLogger(ElasticHelper.class);
 	
 	public static void makeIndex (Map<String, String> indexMap) {
 		HashMap<String, String> idxMap;
@@ -157,25 +159,18 @@ public class ElasticHelper {
 		return response;
 	}
 	
-	public static List<String> getIndexList() {
-		List<String> indexList = new ArrayList<String>();
-		
+	public static String[] getIndexList() {
+
 		Client client = ElasticClientHelper.newTransportClient();
 //		IndicesAdminClient indicesClient = client.admin().indices();
 		
-		GetAliasesResponse getAliasesResponse = client.admin().indices()
-		        .prepareGetAliases()
-		        .get();
+		String[] indices = client.admin()
+			    .indices()
+			    .getIndex(new GetIndexRequest())
+			    .actionGet()
+			    .getIndices();
+
 		
-		ImmutableOpenMap<String, List<AliasMetaData>> ioMap = getAliasesResponse.getAliases();
-		
-		for (String alias : ioMap.keys().toArray(String.class)) {
-			List<AliasMetaData> innerList = ioMap.get(alias);
-		    for (AliasMetaData meta : innerList) {		    		
-		    		indexList.add(meta.getAlias());
-		    }
-		}
-		
-		return indexList;
+		return indices;
 	}
 }

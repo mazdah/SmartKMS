@@ -3,35 +3,66 @@ package com.innotree.smartkms.elastic;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
-import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+
+@Component
 public class ElasticClientHelper {
+	
+	private final static Logger logger = LoggerFactory.getLogger(ElasticClientHelper.class);
+	
 	@Value("${xpack.security.user}")
-	private static String user;
+	public static String user;
 	
 	@Value("${xpack.security.password}")
-	private static String password;
+	public static String password;
 	
 	@Value("${elastic.host}")
-	private static String host;
+	public static String host;
 	
 	@Value("${elastic.port}")
-	private static String port;
+	public static String port;
 	
 	@Value("${cluster.name}")
-	private static String clusterName;
+	public static String clusterName;
+	
+	@Value("${xpack.security.user}")
+    public void setUser(String eluser) {
+		user = eluser;
+    }
+	
+	@Value("${xpack.security.password}")
+    public void setPassword(String passwd) {
+		password = passwd;
+    }
+	
+	@Value("${elastic.host}")
+    public void setHost(String elhost) {
+		host = elhost;
+    }
+	
+	@Value("${elastic.port}")
+    public void setPort(String elport) {
+		logger.debug("##### elport = {}", elport);
+		port = elport;
+    }
+	
+	@Value("${cluster.name}")
+    public void setClusterName(String elClusterName) {
+		clusterName = elClusterName;
+    }
 	
 	public static Client newTransportClient() {
+		logger.debug("##### port = {}", port);
+		
 		Settings settings = Settings.builder()
 	            .put("cluster.name", clusterName)
 	            .put("xpack.security.user", user + ":" + password)
