@@ -15,8 +15,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-
-
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +33,7 @@ import com.innotree.smartkms.datafiles.model.DataFiles;
 import com.innotree.smartkms.datafiles.repository.DataFilesRepository;
 import com.innotree.smartkms.elastic.DataParser;
 import com.innotree.smartkms.elastic.ElasticHelper;
+import com.innotree.smartkms.elastic.ElasticRESTHelper;
 import com.monitorjbl.xlsx.StreamingReader;
 
 @Controller
@@ -52,8 +52,9 @@ public class DataRegistController {
 	@Value("${file.save.dir}")
 	private String saveDir;
 	
-	private long totalLine = 0;
-	private long importedLine = 0;
+	private int totalLine = 0;
+	private int importedLine = 0;
+	private boolean isImportComplete = false;
 	
 	@PostMapping(value="/fileupload")
 	@ResponseBody
@@ -95,9 +96,7 @@ public class DataRegistController {
 		fileMap.put("deleteType", "GET");
 		fileMap.put("isImport", isImport);
 		
-		files.add(fileMap);
 		
-		resultMap.put("files", files);
 		
 		
 		// 1. 저장할 디렉토리 생성
@@ -117,11 +116,18 @@ public class DataRegistController {
 			dataFiles.setElasticIndex(indexName);
 			dataFiles.setElasticType(type);
 			
-			dataFilesRepository.saveAndFlush(dataFiles);
+			DataFiles insertedFile = dataFilesRepository.saveAndFlush(dataFiles);
+			
+			fileMap.put("id", insertedFile.getFileId());
+			fileMap.put("indexName", indexName);
+			fileMap.put("type", type);
 		} catch (IllegalStateException | IOException e) {
 			// TODO Auto-generated catch block
 			logger.debug(e.getLocalizedMessage());
 		}
+		
+		files.add(fileMap);		
+		resultMap.put("files", files);
 		
 		return resultMap;
 	}
@@ -155,14 +161,21 @@ public class DataRegistController {
 	
 	@GetMapping("/startimport")
 	@ResponseBody
-	public synchronized Map<String, Object> startImport(@RequestParam("fileName") String fileName) {
+	public synchronized Map<String, Object> startImport(@RequestParam("id") String id, 
+													   @RequestParam("fileName") String fileName,
+													   @RequestParam("indexName") String indexName,
+													   @RequestParam("type") String type) {
 		logger.debug("##### startImport");
 		Map <String, Object> resultMap = new HashMap <String, Object>();
 		
 		totalLine = 0;
 		importedLine = 0;
+		isImportComplete = false;
 		
 		File excelFile = new File(saveDir + "/" + fileName);
+		String docId = fileName.substring(0, fileName.lastIndexOf("."));
+		List<String> importDataList = new ArrayList<String>();
+		List<String> idList = new ArrayList<String>();
 		
 		try (
 		    InputStream is = new FileInputStream(excelFile);
@@ -191,18 +204,46 @@ public class DataRegistController {
 		        		}
 		        }
 		        
+		        String documentId = docId + "_" + importedLine;
+		        documentId = documentId.replaceAll("\\s+", "_");
 		        String jsonStr = DataParser.getJsonStringFromMap(keyValMap);
+		        
+		        ElasticRESTHelper.importData(documentId, indexName, type, keyValMap);
+		        
+		        //ElasticHelper.importData(documentId, indexName, type, jsonStr);
 		        //logger.debug("##### " + jsonStr);
+//		        importDataList.add(jsonStr);
+//		        idList.add(documentId);
 		        importedLine++;
 		      }
 		    }
+		    
+//		    BulkResponse response = ElasticHelper.importBulkData(idList, indexName, type, importDataList);
+//		    
+//		    if (!response.hasFailures()) {
+		    		DataFiles dataFiles = dataFilesRepository.findByFileId(id);
+			    
+			    dataFiles.setImport(true);
+			    dataFiles.setImportDate(new Date());
+			    dataFiles.setTotalRows(importedLine - 1);
+			    
+			    dataFilesRepository.save(dataFiles);
+			    isImportComplete = true;
+			    resultMap.put("code", "9999");
+			    resultMap.put("message", "데이터 import를 성공적으로 마쳤습니다.");
+//		    } 
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug("##### FileNotFoundException : " + e.getLocalizedMessage());
+			resultMap.put("code", "0001");
+		    resultMap.put("message", "데이터를 정상적으로 import하지 못했습니다. : FileNotFoundException");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.debug("##### IOException : " + e.getLocalizedMessage());
+			resultMap.put("code", "0002");
+		    resultMap.put("message", "데이터를 정상적으로 import하지 못했습니다. : IOException");
 		}
+		
 		return resultMap;
 	}
 	
@@ -248,10 +289,12 @@ public class DataRegistController {
 		Map <String, Object> resultMap = new HashMap <String, Object>();
 		resultMap.put("totalLine", new Long(totalLine));
 		resultMap.put("importedLine", new Long(importedLine));
+		resultMap.put("isImportComplete", isImportComplete);
 		
-		if (importedLine > totalLine) {
+		if (importedLine > totalLine && isImportComplete == true) {
 		    totalLine = 0;
 			importedLine = 0;
+			isImportComplete = false;
 		}
 		
 		return resultMap;
@@ -265,10 +308,18 @@ public class DataRegistController {
 		String[] indices = ElasticHelper.getIndexList();
 		
 		for(String index : indices) {
-			indexList.add(index);
+			if (!index.startsWith(".")) {
+				indexList.add(index);
+			}
 		}
 		
 		return indexList;
+	}
+	
+	@GetMapping(value="/types")
+	@ResponseBody
+	public List<String> getTypes(@RequestParam("index") String index) {
+		return ElasticHelper.getTypeList(index);
 	}
 	
 	@GetMapping(value="/result")

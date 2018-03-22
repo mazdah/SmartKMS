@@ -3,22 +3,20 @@ package com.innotree.smartkms.elastic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
-import org.elasticsearch.action.admin.indices.alias.get.GetAliasesResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.get.GetIndexRequest;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsRequest;
+import org.elasticsearch.action.admin.indices.mapping.get.GetMappingsResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.client.AdminClient;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.IndicesAdminClient;
-import org.elasticsearch.cluster.metadata.AliasMetaData;
-import org.elasticsearch.cluster.metadata.IndexMetaData;
+import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -26,6 +24,8 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.LoggerFactory;
+
+import com.carrotsearch.hppc.cursors.ObjectObjectCursor;
 
 import org.slf4j.Logger;
 
@@ -129,6 +129,8 @@ public class ElasticHelper {
 		resultMap.put("ack", ack);
 		resultMap.put("address", address);
 		
+		ElasticClientHelper.connectDisconnect(client);
+		
 		return resultMap;
 	}
 	
@@ -138,10 +140,11 @@ public class ElasticHelper {
 				.setSource(keyVals, XContentType.JSON)
 		        .get();
 
+		ElasticClientHelper.connectDisconnect(client);
 		return response;
 	}
 	
-	public static BulkResponse importBulkData (String id, String index, String type, List<String> keyVals) {
+	public static BulkResponse importBulkData (List<String> idList, String index, String type, List<String> keyVals) {
 		Client client = ElasticClientHelper.newTransportClient();
 		BulkRequestBuilder bulkRequest = client.prepareBulk();
 		
@@ -149,13 +152,15 @@ public class ElasticHelper {
 		for (int i = 0; i < cnt; i++) {
 			String keyVal = keyVals.get(i);
 			
-			bulkRequest.add(client.prepareIndex(index, type, id)
+			bulkRequest.add(client.prepareIndex(index, type, idList.get(i))
 					.setSource(keyVal, XContentType.JSON)
 			        );
 		}
 		
-		
 		BulkResponse response = bulkRequest.get();
+		
+		ElasticClientHelper.connectDisconnect(client);
+		
 		return response;
 	}
 	
@@ -170,7 +175,30 @@ public class ElasticHelper {
 			    .actionGet()
 			    .getIndices();
 
+		ElasticClientHelper.connectDisconnect(client);
 		
 		return indices;
+	}
+	
+	public static List<String> getTypeList(String index) {
+		List<String> typeList = new ArrayList<String>();
+		Client client = ElasticClientHelper.newTransportClient();
+		
+		GetMappingsResponse res;
+		try {
+			res = client.admin().indices().getMappings(new GetMappingsRequest().indices(index)).get();
+			ImmutableOpenMap<String, MappingMetaData> mapping = res.mappings().get(index);
+            
+	        for (ObjectObjectCursor<String, MappingMetaData> c : mapping) {
+	            typeList.add(c.key);
+	        }
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			logger.debug(e.getLocalizedMessage());
+		}
+        
+		ElasticClientHelper.connectDisconnect(client);
+		
+		return typeList;
 	}
 }

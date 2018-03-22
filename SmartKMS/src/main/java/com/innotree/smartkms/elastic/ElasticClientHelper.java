@@ -3,8 +3,11 @@ package com.innotree.smartkms.elastic;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.apache.http.HttpHost;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.xpack.client.PreBuiltXPackTransportClient;
@@ -31,6 +34,9 @@ public class ElasticClientHelper {
 	@Value("${elastic.port}")
 	public static String port;
 	
+	@Value("${elastic.http.port}")
+	public static String httpPort;
+	
 	@Value("${cluster.name}")
 	public static String clusterName;
 	
@@ -53,6 +59,12 @@ public class ElasticClientHelper {
     public void setPort(String elport) {
 		logger.debug("##### elport = {}", elport);
 		port = elport;
+    }
+	
+	@Value("${elastic.http.port}")
+    public void setHttpPort(String elhttpport) {
+		logger.debug("##### elhttpport = {}", elhttpport);
+		httpPort = elhttpport;
     }
 	
 	@Value("${cluster.name}")
@@ -80,6 +92,15 @@ public class ElasticClientHelper {
 		
         return client;
     }
+	
+	public static RestHighLevelClient newRestHighLevelClient() {
+		RestHighLevelClient client = new RestHighLevelClient(
+		        RestClient.builder(
+		                new HttpHost(host, Integer.valueOf(httpPort), "http"),
+		                new HttpHost(host, Integer.valueOf(httpPort), "http")));
+		
+		return client;
+	}
     
 //    public static Client newTransportClient(String cluster, InetAddress host) {
 //        Settings settings = Settings.builder()
@@ -95,6 +116,7 @@ public class ElasticClientHelper {
 //        return client;
 //    }
     
+	// for TransportClient
     public static void connectDisconnect(Client client) {
         //connect
         ClusterHealthResponse response = client.admin().cluster().prepareHealth().execute().actionGet();
