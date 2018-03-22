@@ -161,7 +161,7 @@ public class DataRegistController {
 	
 	@GetMapping("/startimport")
 	@ResponseBody
-	public synchronized Map<String, Object> startImport(@RequestParam("id") String id, 
+	public synchronized Map<String, Object> startImport(@RequestParam("id") int id, 
 													   @RequestParam("fileName") String fileName,
 													   @RequestParam("indexName") String indexName,
 													   @RequestParam("type") String type) {
@@ -174,7 +174,7 @@ public class DataRegistController {
 		
 		File excelFile = new File(saveDir + "/" + fileName);
 		String docId = fileName.substring(0, fileName.lastIndexOf("."));
-		List<String> importDataList = new ArrayList<String>();
+		List<Map<String, String>> importDataList = new ArrayList<Map<String, String>>();
 		List<String> idList = new ArrayList<String>();
 		
 		try (
@@ -208,17 +208,17 @@ public class DataRegistController {
 		        documentId = documentId.replaceAll("\\s+", "_");
 		        String jsonStr = DataParser.getJsonStringFromMap(keyValMap);
 		        
-		        ElasticRESTHelper.importData(documentId, indexName, type, keyValMap);
+		        ElasticRESTHelper.importDataAsync(documentId, indexName, type, keyValMap);
 		        
 		        //ElasticHelper.importData(documentId, indexName, type, jsonStr);
 		        //logger.debug("##### " + jsonStr);
-//		        importDataList.add(jsonStr);
+//		        importDataList.add(keyValMap);
 //		        idList.add(documentId);
 		        importedLine++;
 		      }
 		    }
 		    
-//		    BulkResponse response = ElasticHelper.importBulkData(idList, indexName, type, importDataList);
+//		    ElasticRESTHelper.bulkImportDataAsync(idList, indexName, type, importDataList);
 //		    
 //		    if (!response.hasFailures()) {
 		    		DataFiles dataFiles = dataFilesRepository.findByFileId(id);

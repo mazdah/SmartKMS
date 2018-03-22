@@ -4,9 +4,15 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -28,8 +34,14 @@ public class ElasticClientHelper {
 	@Value("${xpack.security.password}")
 	public static String password;
 	
-	@Value("${elastic.host}")
-	public static String host;
+	@Value("${elastic.host.data1}")
+	public static String hostData1;
+	
+	@Value("${elastic.host.data2}")
+	public static String hostData2;
+	
+	@Value("${elastic.host.data3}")
+	public static String hostData3;
 	
 	@Value("${elastic.port}")
 	public static String port;
@@ -50,9 +62,19 @@ public class ElasticClientHelper {
 		password = passwd;
     }
 	
-	@Value("${elastic.host}")
-    public void setHost(String elhost) {
-		host = elhost;
+	@Value("${elastic.host.data1}")
+    public void setHostData1(String elhost) {
+		hostData1 = elhost;
+    }
+	
+	@Value("${elastic.host.data2}")
+    public void setHostData2(String elhost) {
+		hostData2 = elhost;
+    }
+	
+	@Value("${elastic.host.data3}")
+    public void setHostData3(String elhost) {
+		hostData3 = elhost;
     }
 	
 	@Value("${elastic.port}")
@@ -84,7 +106,9 @@ public class ElasticClientHelper {
 		Client client = null;
 		try {
 			client = new PreBuiltXPackTransportClient(settings)
-					.addTransportAddress(new TransportAddress(InetAddress.getByName(host), Integer.valueOf(port)));
+					.addTransportAddress(new TransportAddress(InetAddress.getByName(hostData1), Integer.valueOf(port)))
+					.addTransportAddress(new TransportAddress(InetAddress.getByName(hostData2), Integer.valueOf(port)))
+					.addTransportAddress(new TransportAddress(InetAddress.getByName(hostData3), Integer.valueOf(port)));
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -94,11 +118,23 @@ public class ElasticClientHelper {
     }
 	
 	public static RestHighLevelClient newRestHighLevelClient() {
+		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+		credentialsProvider.setCredentials(AuthScope.ANY,
+		        new UsernamePasswordCredentials(user, password));
+		
 		RestHighLevelClient client = new RestHighLevelClient(
 		        RestClient.builder(
-		                new HttpHost(host, Integer.valueOf(httpPort), "http"),
-		                new HttpHost(host, Integer.valueOf(httpPort), "http")));
-		
+		                new HttpHost(hostData1, Integer.valueOf(httpPort), "http"),
+		                new HttpHost(hostData2, Integer.valueOf(httpPort), "http"),
+		                new HttpHost(hostData3, Integer.valueOf(httpPort), "http"))
+		        .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+		            @Override
+		            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+		                httpClientBuilder.disableAuthCaching(); 
+		                return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+		            }
+		        }));
+	
 		return client;
 	}
     
