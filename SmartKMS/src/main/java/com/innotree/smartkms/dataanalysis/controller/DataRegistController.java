@@ -206,21 +206,21 @@ public class DataRegistController {
 		        
 		        String documentId = docId + "_" + importedLine;
 		        documentId = documentId.replaceAll("\\s+", "_");
-		        String jsonStr = DataParser.getJsonStringFromMap(keyValMap);
+		        //String jsonStr = DataParser.getJsonStringFromMap(keyValMap);
 		        
-		        ElasticRESTHelper.importDataAsync(documentId, indexName, type, keyValMap);
+//		        ElasticRESTHelper.importData(documentId, indexName, type, keyValMap);
 		        
 		        //ElasticHelper.importData(documentId, indexName, type, jsonStr);
 		        //logger.debug("##### " + jsonStr);
-//		        importDataList.add(keyValMap);
-//		        idList.add(documentId);
+		        importDataList.add(keyValMap);
+		        idList.add(documentId);
 		        importedLine++;
 		      }
 		    }
 		    
-//		    ElasticRESTHelper.bulkImportDataAsync(idList, indexName, type, importDataList);
+		    BulkResponse response = ElasticRESTHelper.bulkImportData(idList, indexName, type, importDataList);
 //		    
-//		    if (!response.hasFailures()) {
+		    if (!response.hasFailures()) {
 		    		DataFiles dataFiles = dataFilesRepository.findByFileId(id);
 			    
 			    dataFiles.setImport(true);
@@ -231,7 +231,7 @@ public class DataRegistController {
 			    isImportComplete = true;
 			    resultMap.put("code", "9999");
 			    resultMap.put("message", "데이터 import를 성공적으로 마쳤습니다.");
-//		    } 
+		    }
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			logger.debug("##### FileNotFoundException : " + e.getLocalizedMessage());
@@ -242,6 +242,14 @@ public class DataRegistController {
 			logger.debug("##### IOException : " + e.getLocalizedMessage());
 			resultMap.put("code", "0002");
 		    resultMap.put("message", "데이터를 정상적으로 import하지 못했습니다. : IOException");
+		} catch (OutOfMemoryError e) {
+			logger.debug("##### OutOfMemoryError : " + e.getLocalizedMessage());
+			resultMap.put("code", "1000");
+		    resultMap.put("message", "데이터를 정상적으로 import하지 못했습니다. : OutOfMemoryError");
+		} finally {
+			totalLine = 0;
+			importedLine = 0;
+			isImportComplete = false;
 		}
 		
 		return resultMap;

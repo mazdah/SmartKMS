@@ -354,7 +354,12 @@ public class ElasticRESTHelper {
 		ActionListener<IndexResponse> listener = new ActionListener<IndexResponse>() {
 		    @Override
 		    public void onResponse(IndexResponse indexResponse) {
-		    	
+		    		try {
+					client.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					logger.debug("##### [IOException] importDataAsync onResponse client.close() : " + e.getLocalizedMessage());
+				}
 		    		isAsyncImportComplete = true;
 		    		//Handle (if needed) the case where the document was created for the first time
 				//Handle (if needed) the case where the document was rewritten as it was already existing
@@ -391,13 +396,6 @@ public class ElasticRESTHelper {
 		};
 		
 		client.indexAsync(request, listener);
-		
-		try {
-			client.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.debug("##### [IOException] importDataAsync onResponse client.close() : " + e.getLocalizedMessage());
-		}
 	}
 	
 	public static BulkResponse bulkImportData (List<String> idList, String index, String type, List<Map<String,String>> keyVals) {
@@ -472,23 +470,26 @@ public class ElasticRESTHelper {
 		    @Override
 		    public void onResponse(BulkResponse bulkResponse) {
 		    		isAsyncBulkImportComplete = true;
-		    		
+		    		try {
+		    			client.close();
+		    		} catch (IOException e) {
+		    			// TODO Auto-generated catch block
+		    			logger.debug("##### [IOException] bulkImportDataAsync onResponse client.close() : " + e.getLocalizedMessage());
+		    		}
 		    }
 
 		    @Override
 		    public void onFailure(Exception e) {
 		    		logger.debug("##### [IOException] bulkImportDataAsync onFailure : " + e.getLocalizedMessage());
-		    	
+		    		try {
+		    			client.close();
+		    		} catch (IOException ie) {
+		    			// TODO Auto-generated catch block
+		    			logger.debug("##### [IOException] bulkImportDataAsync onFailure client.close() : " + ie.getLocalizedMessage());
+		    		}
 		    }
 		};
 		
 		client.bulkAsync(request, listener);
-		
-		try {
-			client.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.debug("##### [IOException] bulkImportDataAsync onResponse client.close() : " + e.getLocalizedMessage());
-		}
 	}
 }

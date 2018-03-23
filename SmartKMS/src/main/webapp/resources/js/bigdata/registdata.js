@@ -2,11 +2,40 @@ var isCreateIndex = true;
 var indexSelectHtml = "";
 var typeSelectHtml = "";
 
+var hour = 0;
+var minute = 0;
+var second = 0;
+var timer;
+
 $("._indexsel").hide();
 
 $(function () {
     'use strict';
 
+    function setTimer(){
+    	   timer = setInterval(function(){
+    		   second++;
+    		   
+    		   if (second == 60) {
+    			   second = 0;
+    			   minute++;
+    			   
+    			   if (minute == 60) {
+    				   minute = 0;
+    				   hour++;
+    			   }
+    		   }
+    		   
+    		   var hourStr = hour < 10?"0"+hour:""+hour;
+    		   var minuteStr = minute < 10?"0"+minute:""+minute;
+    		   var secondSt = second < 10?"0"+second:""+second;
+    		   
+    		   $("._hour").text(hourStr);
+    		   $("._minute").text(minuteStr);
+    		   $("._second").text(secondSt);
+    	   },1000);
+    	}
+    
     // Initialize the jQuery File Upload widget:
     $('#fileupload').fileupload({
         // Uncomment the following to send cross-domain cookies:
@@ -42,7 +71,7 @@ $(function () {
     		
     		if (isImport == true) {
     			$("._modal-message").empty();
-        		$("._modal-message").append("<p>현재 업로드한 엑셀 파일의 데이터를 Elasticsearch로 import 하고 있습니다.</p><p>작업이 끝날 때까지 페이지 이동이나 새로고침을 자제해주세요.</p><p>파일 이름 : <font color='#00FFFF'><strong>" + data.result.files[0].name + "</strong></font></p>");
+        		$("._modal-message").append("<p>현재 업로드한 엑셀 파일의 데이터를 분석/변환 하고 있습니다.</p><p>작업이 끝날 때까지 페이지 이동이나 새로고침을 자제해주세요.</p><p>파일 이름 : <font color='#00FFFF'><strong>" + data.result.files[0].name + "</strong></font></p>");
         		console.log("progress start!!!");
         		
         		$("._progress").attr("aria-valuenow", 0);
@@ -51,6 +80,7 @@ $(function () {
     			importData(data.result.files[0].id, data.result.files[0].name, data.result.files[0].indexName, data.result.files[0].type);
     			poll();
     			$("#modal-success").modal({backdrop: 'static', keyboard: false});
+    			setTimer()
     			
     			$("._close").attr("disabled","disabled");
     		}
@@ -63,10 +93,24 @@ $(function () {
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             success: function(data, status, jqXHR) {
-
+            		//alert("[" + status + "] data import Success!\n\n" + JSON.stringify(data));
+            	
+            		if (data.code == "9999") {
+            			$("._modal-message").empty();
+	    	        		$("._modal-message").append("<p>데이터 import 작업이 모두 완료되었습니다.</p><p>창을 닫고 다음 작업을 진행해도 좋습니다.</p>");
+	    	        		console.log("parsing end!!!");
+            		} else {
+            			$("._modal-message").empty();
+    	        			$("._modal-message").append("<font color='#ff0000'><p>데이터 import 중 오류가 발생했습니다.</p><p><strong>" + data.message + "</strong></p></font>");
+            		}
+	            	
+            		clearInterval(timer);
+	        		$("._close").removeAttr("disabled");
             },
             error: function (jqXHR, status) {
             		alert("[" + status + "] data import started Fail!\n\n" + JSON.stringify(jqXHR));
+            		isContinue = false;
+            		location.reload();
             }
         })
     }
@@ -98,10 +142,8 @@ $(function () {
                 		
                 		//if (isImportComplete == true) {
                 			$("._modal-message").empty();
-                    		$("._modal-message").append("<p>데이터 import 작업이 모두 완료되었습니다.</p><p>창을 닫고 다음 작업을 진행해도 좋습니다.</p>");
+                    		$("._modal-message").append("<p>데이터 분석 / 변환 작업이 모두 완료되었습니다.</p><p>데이터를 elasticsearch로 import 중이니 잠시만 더 기다려주세요..</p>");
                     		console.log("parsing end!!!");
-                    		
-                    		$("._close").removeAttr("disabled");
                     		isContinue = false;
 //                		} else {
 //                			$("._modal-message").empty();

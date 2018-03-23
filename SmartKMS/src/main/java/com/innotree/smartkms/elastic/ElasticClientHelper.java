@@ -124,9 +124,7 @@ public class ElasticClientHelper {
 		
 		RestHighLevelClient client = new RestHighLevelClient(
 		        RestClient.builder(
-		                new HttpHost(hostData1, Integer.valueOf(httpPort), "http"),
-		                new HttpHost(hostData2, Integer.valueOf(httpPort), "http"),
-		                new HttpHost(hostData3, Integer.valueOf(httpPort), "http"))
+		                new HttpHost(hostData1, Integer.valueOf(httpPort), "http"))
 		        .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
 		            @Override
 		            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
