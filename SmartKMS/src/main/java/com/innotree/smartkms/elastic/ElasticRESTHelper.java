@@ -414,11 +414,11 @@ public class ElasticRESTHelper {
 		//Timeout to wait for the bulk request to be performed as a TimeValue
 		//Timeout to wait for the bulk request to be performed as a String
 //		request.timeout(TimeValue.timeValueMinutes(2));
-//		request.timeout("2m");
+		request.timeout("10m");
 		
 		//Refresh policy as a WriteRequest.RefreshPolicy instance
 		//Refresh policy as a String
-//		request.setRefreshPolicy(WriteRequest.RefreshPolicy.WAIT_UNTIL); 
+		request.setRefreshPolicy(WriteRequest.RefreshPolicy.WAIT_UNTIL); 
 //		request.setRefreshPolicy("wait_for");
 		
 		//Sets the number of shard copies that must be active before proceeding with the index/update/delete operations.

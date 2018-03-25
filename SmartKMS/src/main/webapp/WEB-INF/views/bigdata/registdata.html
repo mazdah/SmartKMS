@@ -31,6 +31,8 @@
 <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 <link rel="stylesheet" href="css/fileupload/jquery.fileupload.css">
 <link rel="stylesheet" href="css/fileupload/jquery.fileupload-ui.css">
+<!-- DataTables -->
+  <link rel="stylesheet" href="css/datatables.net/dataTables.bootstrap.min.css">
 <!-- CSS adjustments for browsers with JavaScript disabled -->
 <noscript><link rel="stylesheet" href="css/fileupload/jquery.fileupload-noscript.css"></noscript>
 <noscript><link rel="stylesheet" href="css/fileupload/jquery.fileupload-ui-noscript.css"></noscript>
@@ -53,7 +55,24 @@
     .example-modal .modal {
       background: transparent !important;
     }
- </style>
+    
+    table.dataTable thead th,
+	table.dataTable tfoot th {
+	  text-align: center;
+	}
+    
+    .align-left {
+    		text-align: left;
+    }
+    
+    .align-center {
+    		text-align: center;
+    }
+    
+    .align-right {
+    		text-align: right;
+    }
+</style>
 </head>
 <body>
 <!-- /.modal-dialog -->
@@ -67,7 +86,7 @@
       </div>
       <div class="modal-body">
       	<div class="_modal-message">
-        <p>현재 업로드한 엑셀 파일의 데이터를 분석/변환 하고 있습니다.</p>
+        <p>현재 업로드한 엑셀 파일의 데이터를 변환/적재 하고 있습니다.</p>
         <p>작업이 끝날 때까지 페이지 이동이나 새로고침을 자제해주세요..</p>
         </div>
         <br>
@@ -82,7 +101,9 @@
 	        경과 시간 : <span class="_hour">00</span> : <span class="_minute">00</span> : <span class="_second">00</span>
 	        </div>
 	        <div class="pull-right">
-	        <span class="_now">0</span> / <span class="_total">0</span> rows
+	        <span class="_now">0</span> / <span class="_total">0</span> 데이터 변환
+	        <br>
+	        <span class="_nowimport">0</span> / <span class="_total">0</span> 데이터 적재
 	        </div>
 	      </div>
 	      <br>
@@ -96,80 +117,133 @@
   </div>
 </div>
 <!-- /.modal-dialog -->
-<div class="container col-md-7">
-    <!-- The file upload form used as target for the file upload widget -->
-    <form id="fileupload" action="/SmartKMS/fileupload" method="POST" enctype="multipart/form-data">
-    		<label>Index Name</label>
-    		<div class="form-group _indexform">
-			<input class="form-control _indexName col-md-5" type="text" name="indexName" placeholder="Index 이름" style="width: 40%;">
-		    <button type="button" class="btn btn-primary _selectindex col-md-2" >
-		                    <i class="glyphicon glyphicon-th-list"></i>&nbsp;&nbsp;&nbsp;
-		                    <span>기존 Index 선택</span>
-		                </button>
-	    </div>
-	    <br>
-	    <br>
-	    <div class="form-group _typeform">
-		    <label>Type</label>
-		    <br>
-		    <input class="form-control col-md-5 _type" type="text" name="type" placeholder="Input Type" style="width: 40%;">
-		    <button type="button" class="btn btn-primary _selecttype col-md-2" >
-		                    <i class="glyphicon glyphicon-th-list"></i>&nbsp;&nbsp;&nbsp;
-		                    <span>기존 type 선택</span>
-		                </button>
-		</div>
-		<br>
-		<br>
-		<div class="form-group">
-		    <label>
-	        <input type="checkbox" name="isImport" class="minimal" checked>
-	        Import to Elasticsearch
-	        </label>
-		</div>
-		<!-- The global progress state -->
-        <div class="col-lg-6 fileupload-progress fade">
-            <!-- The global progress bar -->
-            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+<div class="row">
+        <div class="col-md-6">
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <i class="glyphicon glyphicon-import"></i>
+
+              <h3 class="box-title">파일 업로드 및 적재</h3>
             </div>
-            <!-- The extended global progress state -->
-            <div class="progress-extended">&nbsp;</div>
-        </div>
-        <br>
-        <br>
-        <br>
-		<br>
-        <!-- Redirect browsers with JavaScript disabled to the origin page -->
-        <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
-        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
-        <div class="row fileupload-buttonbar">
-            <div class="col-lg-7">
-                <!-- The fileinput-button span is used to style the file input field as button -->
-                <span class="btn btn-success fileinput-button">
-                    <i class="glyphicon glyphicon-plus"></i>
-                    <span>Add files...</span>
-                    <input type="file" name="file">
-                </span>
-                <button type="submit" class="btn btn-primary start">
-                    <i class="glyphicon glyphicon-upload"></i>
-                    <span>Start upload</span>
-                </button>
-                <button type="reset" class="btn btn-warning cancel">
-                    <i class="glyphicon glyphicon-ban-circle"></i>
-                    <span>Cancel upload</span>
-                </button>
-                <button type="button" class="btn btn-danger delete">
-                    <i class="glyphicon glyphicon-trash"></i>
-                    <span>Delete</span>
-                </button>
-                <input type="checkbox" class="toggle">
-                <!-- The global file processing state -->
-                <span class="fileupload-process"></span>
+            <div class="box-body">
+			    <!-- The file upload form used as target for the file upload widget -->
+			    <form id="fileupload" action="/SmartKMS/fileupload" method="POST" enctype="multipart/form-data">
+			    		<label>Index Name</label>
+			    		<div class="form-group _indexform">
+						<input class="form-control _indexName col-md-6" type="text" name="indexName" placeholder="Index 이름" style="width: 40%;">
+					    <button type="button" class="btn btn-primary _selectindex col-md-3" >
+					                    <i class="glyphicon glyphicon-th-list"></i>&nbsp;&nbsp;&nbsp;
+					                    <span>기존 Index 선택</span>
+					                </button>
+				    </div>
+				    <br>
+				    <br>
+				    <div class="form-group _typeform">
+					    <label>Type</label>
+					    <br>
+					    <input class="form-control col-md-6 _type" type="text" name="type" placeholder="Input Type" style="width: 40%;">
+					    <button type="button" class="btn btn-primary _selecttype col-md-3" >
+					                    <i class="glyphicon glyphicon-th-list"></i>&nbsp;&nbsp;&nbsp;
+					                    <span>기존 type 선택</span>
+					                </button>
+					</div>
+					<br>
+					<br>
+					<div class="form-group">
+					    <label>
+				        <input type="checkbox" name="isImport" class="minimal" checked>
+				        Import to Elasticsearch
+				        </label>
+					</div>
+					<!-- The global progress state -->
+			        <div class="col-lg-8 fileupload-progress fade">
+			            <!-- The global progress bar -->
+			            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+			                <div class="progress-bar progress-bar-success" style="width:0%;"></div>
+			            </div>
+			            <!-- The extended global progress state -->
+			            <div class="progress-extended">&nbsp;</div>
+			        </div>
+			        <br>
+			        <br>
+			        <br>
+					<br>
+			        <!-- Redirect browsers with JavaScript disabled to the origin page -->
+			        <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
+			        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+			        <div class="row fileupload-buttonbar">
+			            <div class="col-lg-9">
+			                <!-- The fileinput-button span is used to style the file input field as button -->
+			                <span class="btn btn-success fileinput-button">
+			                    <i class="glyphicon glyphicon-plus"></i>
+			                    <span>Add files...</span>
+			                    <input type="file" name="file">
+			                </span>
+			                <button type="submit" class="btn btn-primary start">
+			                    <i class="glyphicon glyphicon-upload"></i>
+			                    <span>Start upload</span>
+			                </button>
+			                <button type="reset" class="btn btn-warning cancel">
+			                    <i class="glyphicon glyphicon-ban-circle"></i>
+			                    <span>Cancel upload</span>
+			                </button>
+			                <button type="button" class="btn btn-danger delete">
+			                    <i class="glyphicon glyphicon-trash"></i>
+			                    <span>Delete</span>
+			                </button>
+			                <input type="checkbox" class="toggle">
+			                <!-- The global file processing state -->
+			                <span class="fileupload-process"></span>
+			            </div>
+			        </div>
+			        <!-- The table listing the files available for upload/download -->
+			        <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
+			    </form>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <i class="glyphicon glyphicon-info-sign"></i>
+
+              <h3 class="box-title">Elasticsearch 정보</h3>
             </div>
-        </div>
-        <!-- The table listing the files available for upload/download -->
-        <table role="presentation" class="table table-striped"><tbody class="files"></tbody></table>
-    </form>
+            <div class="box-body">
+            Elsastic state
+            </div>
+		</div>
+	</div>
+</div>
+<div class="row">
+<div class="col-md-12">
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <i class="glyphicon glyphicon-list-alt"></i>
+
+              <h3 class="box-title">파일 목록 관리</h3>
+            </div>
+            <div class="box-body">
+            <!-- 파일 목록 테이블 시작 -->
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  <th>파일명</th>
+                  <th>size</th>
+                  <th>row</th>
+                  <th>Index</th>
+                  <th>Type</th>
+                  <th>import 여부</th>
+                  <th>upload 날짜</th>
+                  <th>import 날짜</th>
+                  <th>작 업</th>
+                </tr>
+                </thead>
+              </table>
+            <!-- 파일 목록 테이블  -->
+            </div>
+		</div>
+	</div>
 </div>
 <!-- The blueimp Gallery widget -->
 <div id="blueimp-gallery" class="blueimp-gallery blueimp-gallery-controls" data-filter=":even">
@@ -282,9 +356,15 @@
 <script src="js/fileupload/jquery.fileupload-validate.js"></script>
 <!-- The File Upload user interface plugin -->
 <script src="js/fileupload/jquery.fileupload-ui.js"></script>
-<script src="js/bigdata/registdata.js"></script>
 <!-- iCheck 1.0.1 -->
 <script src="js/icheck/icheck.min.js"></script>
+<!-- DataTables -->
+<script src="js/datatables.net/jquery.dataTables.min.js"></script>
+<script src="js/datatables.net/dataTables.bootstrap.min.js"></script>
+<!-- AdminLTE App -->
+<script src="js/AdminLTE/adminlte.min.js"></script>
+
+<script src="js/bigdata/registdata.js"></script>
 <!-- The XDomainRequest Transport is included for cross-domain file deletion for IE 8 and IE 9 -->
 <!--[if (gte IE 8)&(lt IE 10)]>
 <script src="js/cors/jquery.xdr-transport.js"></script>

@@ -62,7 +62,7 @@ $(document).ready(function() {
 	$("._dataregist").click(function () {
 		$("#ciframe").attr("src", "/SmartKMS/dataregist");
 		
-		displayHeader("데이터 등록", "엑셀 또는 CSV 파일 등록", "빅데이터 분석", "데이터 등록")
+		displayHeader("데이터 등록", "MS Excel (xlsx 포맷만 가능)", "빅데이터 분석", "데이터 등록")
 	});
 	
 	$("._indexlist").click(function () {
