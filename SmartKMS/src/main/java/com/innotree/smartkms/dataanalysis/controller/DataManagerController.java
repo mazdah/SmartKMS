@@ -57,7 +57,7 @@ public class DataManagerController {
 	
 	@GetMapping("/startimport")
 	@ResponseBody
-	public synchronized Map<String, Object> startImport(@RequestParam("id") int id, 
+	public synchronized Map<String, Object> startImport(@RequestParam("id") long id, 
 													   @RequestParam("fileName") String fileName,
 													   @RequestParam("indexName") String indexName,
 													   @RequestParam("type") String type) {

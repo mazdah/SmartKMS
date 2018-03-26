@@ -8,6 +8,8 @@ var second = 0;
 var timer;
 var timeout;
 var $req;
+var redayIndex = "N";
+var readyType = "N";
 
 var currPage = 0;
 
@@ -128,17 +130,33 @@ $(function () {
     
     $('#example1 tbody').on( 'click', '._downdload', function () {
         var data = table.row( $(this).parents('tr') ).data();
-        alert("download : " + JSON.stringify(data));
+//        alert("download : " + JSON.stringify(data));
+        controller.downloadFile(data.filePath, data.orgFileName);
     } );
     
     $('#example1 tbody').on( 'click', '._delete', function () {
         var data = table.row( $(this).parents('tr') ).data();
-        alert("delete : " + JSON.stringify(data));
+//        alert("delete : " + JSON.stringify(data));
+        controller.deleteFile(data.fileId, data.orgFileName);
     } );
     
     $('#example1 tbody').on( 'click', '._import', function () {
         var data = table.row( $(this).parents('tr') ).data();
-        alert("import : " + JSON.stringify(data));
+//        alert("import : " + JSON.stringify(data));
+        
+        $("._modal-message").empty();
+		$("._modal-message").append("<p>현재 업로드한 엑셀 파일의 데이터를 변환/적재 하고 있습니다.</p><p>작업이 끝날 때까지 페이지 이동이나 새로고침을 자제해주세요.</p><p>파일 이름 : <font color='#00FFFF'><strong>" + data.orgFileName + "</strong></font></p>");
+		console.log("progress start!!!");
+		
+		$("._progress").attr("aria-valuenow", 0);
+		$("._progress").css("width", "0%");
+    
+        controller.importData(data.fileId, data.orgFileName, data.elasticIndex, data.elasticType);
+        controller.poll();
+		$("#modal-success").modal({backdrop: 'static', keyboard: false});
+		setTimer()
+		
+		$("._close").attr("disabled","disabled");
     } );
     
     //$('#example1').dataTable().fnSetFilteringEnterPress();
@@ -151,11 +169,11 @@ $(function () {
     });
 
     // Enable iframe cross-domain access via redirect option:
-    $('#fileupload').fileupload(
-        'option',
-        'redirect',
-        '/SmartKMS/result'
-    );
+//    $('#fileupload').fileupload(
+//        'option',
+//        'redirect',
+//        '/SmartKMS/result'
+//    );
     
     $('#fileupload').bind('fileuploaddestroy', function (e, data) {
     		var fileName = data.context.find('a[download]').attr('download');
@@ -166,9 +184,8 @@ $(function () {
 	    		e.preventDefault();
 	    		return false;
 	    	}
-    	});
-    
-    $('#fileupload').bind('fileuploaddone', function (e, data) {
+    	})
+    	.bind('fileuploaddone', function (e, data) {
     		// data.result
         // data.textStatus;
         // data.jqXHR;
@@ -191,6 +208,50 @@ $(function () {
     			
     			$("._close").attr("disabled","disabled");
     		}
+    		else {
+    			alert("파일을 정상적으로 Upload 하였습니다.\n파일명 : " + data.result.files[0].name);
+    			$('#example1').DataTable().ajax.reload();
+    		}
+    	})
+    	.bind('fileuploadsubmit', function (e, data) {
+    		var indexName = $('._indexName').val();
+    		var typeName = $('._type').val();
+    		
+    		var selIndexName = $('._indexName option:selected').val();
+    		var selTypeName = $('._type option:selected').val();
+    		
+    		//alert("readyType = " + readyType + " : " + typeName + " : " + selTypeName);
+    		
+    		if (readyIndex == "S") {
+    			if (selIndexName == "" || selIndexName == undefined) {
+        			alert("Index Name을 입력해주세요.");
+        			return false;
+        		}
+    		} else {
+    			if (indexName == "" || indexName == undefined) {
+        			alert("Index Name을 입력해주세요.");
+        			return false;
+        		}
+    		}
+    		
+    		if (readyType == "S") {
+    			if (selTypeName == "" || selTypeName == undefined) {
+        			alert("Type을 입력해주세요.");
+        			return false;
+        		}
+    		} else {
+    			if (typeName == "" || typeName == undefined) {
+        			alert("Type을 입력해주세요.");
+        			return false;
+        		}
+    		}
+    		
+    		
+    		return true;
+    	})
+    	.bind('fileuploaddestroyed', function (e, data) {
+    		alert("파일을 정상적으로 삭제 하였습니다.\n파일명 : " + data.result.files[0].name);
+    		$('#example1').DataTable().ajax.reload();
     	});
     
     $("#modal-success").on('hidden.bs.modal', function (e) {
@@ -215,6 +276,8 @@ $(document).ready(function () {
     	
     		$("._indexform").empty();
 		$("._indexform").append(indexTemplate);
+		
+		readyIndex = "N";
     });
     
     $(document).on("click", "._selectindex", function () {
@@ -225,6 +288,7 @@ $(document).ready(function () {
     		
     		$("._indexform").empty();
     		$("._indexform").append(indexSelectHtml);
+    		readyIndex = "S";
     });
     
     $(document).on("click", "._createtype", function () {
@@ -236,6 +300,8 @@ $(document).ready(function () {
 		
 		$("._typeform").empty();
 		$("._typeform").append(typeTemplate);
+		
+		readyType = "N";
 	});
 	
 	$(document).on("click", "._selecttype", function () {
@@ -246,6 +312,8 @@ $(document).ready(function () {
 			
 			$("._typeform").empty();
 			$("._typeform").append(typeSelectHtml);
+			
+			readyType = "S";
 	});
 	
 	$(document).on("change", "._indexName", function () {
@@ -302,6 +370,9 @@ var controller = function () {
 		            		
 		            	indexSelectHtml = indexTemplate;
 		            	_getType(data[0]);
+		            	readyIndex = "S";
+	            } else {
+	            		readyIndex = "N";
 	            }
 	        },
 	        error: function (jqXHR, status) {
@@ -317,7 +388,7 @@ var controller = function () {
 	        dataType: 'json',
 	        success: function(data, status, jqXHR) {
 	            if (data.length > 0) {
-	    	            	var typeTemplate = '<select class="form-control select2 _typeName col-md-6" name="type" style="width: 40%;">';
+	    	            	var typeTemplate = '<select class="form-control select2 _type col-md-6" name="type" style="width: 40%;">';
 	    	            	
 	    	            	for(i in data) {
 	    	            		if (i == 0) {
@@ -337,6 +408,10 @@ var controller = function () {
 	    	            	$("._typeform").append(typeTemplate);
 	    	            		
 	    	            	typeSelectHtml = typeTemplate;
+	    	            	
+	    	            	redyType = "S";
+	            } else {
+	            		redyType = "N";
 	            }
 	        },
 	        error: function (jqXHR, status) {
@@ -375,7 +450,7 @@ var controller = function () {
 	        		isContinue = false;
 	        		location.reload();
 	        }
-		})
+		});
 	};
 
     var _poll = function() {   		
@@ -418,7 +493,7 @@ var controller = function () {
             timeout: 3000,
             complete: function () {
             		//if (isContinue == true) {
-            			timeout = setTimeout(function() { poll(); }, 500);
+            			timeout = setTimeout(function() { controller.poll(); }, 500);
 //            		} else {
 //            			clearTimeout(timeout);
 //	        	        	$req.abort();
@@ -427,12 +502,48 @@ var controller = function () {
             }
         });
     };
+    
+    var _deleteFile = function (fileId, fileName) {
+    		$.ajax({
+	        url: '/SmartKMS/filedelete?fileId=' + fileId + '&fileName=' + fileName,
+	        type: 'GET',
+	        dataType: 'json',
+	        contentType: 'application/json; charset=utf-8',
+	        success: function(data, status, jqXHR) {
+	        		//alert("[" + status + "] data import Success!\n\n" + JSON.stringify(data));
+	        		alert(data.message);
+	        		$('#example1').DataTable().ajax.reload();
+	        },
+	        error: function (jqXHR, status) {
+	        		alert("[" + status + "] 파일을 삭제하지 못하였습니다.\n\n" + JSON.stringify(jqXHR));
+	        }
+		});
+    };
+    
+    var _downloadFile = function (filePath, fileName) {
+    		window.location.href = '/SmartKMS/download?filePath=' + filePath + '&fileName=' + fileName;
+//		$.ajax({
+//        url: '/SmartKMS/download?filePath=' + filePath + '&fileName=' + fileName,
+//        type: 'GET',
+//        dataType: 'json',
+//        contentType: 'application/json; charset=utf-8',
+//        success: function(data, status, jqXHR) {
+//        		//alert("[" + status + "] data import Success!\n\n" + JSON.stringify(data));
+//        		alert("파일을 정상적으로 다운로드 하였습니다.");
+//        },
+//        error: function (jqXHR, status) {
+//        		alert("[" + status + "] 파일을 다운로드하지 못하였습니다.\n\n" + JSON.stringify(jqXHR));
+//        }
+//		});
+	};
 	
 	return {
 		init			: _init,
 		getType		: _getType,
 		importData	: _importData,
-		poll			: _poll
+		poll			: _poll,
+		deleteFile	: _deleteFile,
+		downloadFile	: _downloadFile
 	}
 }();
 

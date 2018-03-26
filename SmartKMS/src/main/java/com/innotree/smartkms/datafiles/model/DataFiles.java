@@ -25,7 +25,7 @@ public class DataFiles implements Serializable {
 	@Id
 	@Column(name="file_id")
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int fileId;
+	private long fileId;
 	
 	@Column(name="org_file_name")
 	private String orgFileName;
@@ -60,7 +60,7 @@ public class DataFiles implements Serializable {
 	@Column(name="total_rows")
 	private int totalRows;
 
-	public DataFiles(int fileId, String orgFileName, String savedFileName, long fileSize, String elasticIndex,
+	public DataFiles(long fileId, String orgFileName, String savedFileName, long fileSize, String elasticIndex,
 			String elasticType, boolean isImport, Date updateDate, Date importDate) {
 		super();
 		this.fileId = fileId;

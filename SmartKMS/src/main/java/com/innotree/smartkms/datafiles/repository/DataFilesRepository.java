@@ -11,7 +11,7 @@ public interface DataFilesRepository extends JpaRepository<DataFiles, Long> {
 	
 	DataFiles findByOrgFileName (String orgFileName);
 	
-	DataFiles findByFileId (int fileId);
+	DataFiles findByFileId (long fileId);
 	
 	List<DataFiles> findByIsImport (boolean isImport);
 	
