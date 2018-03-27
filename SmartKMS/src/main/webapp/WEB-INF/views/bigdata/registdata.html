@@ -123,13 +123,13 @@
             <div class="box-header with-border">
               <i class="glyphicon glyphicon-import"></i>
 
-              <h3 class="box-title">파일 업로드 및 적재</h3>
+              <h3 class="box-title">Index 생성 및 데이터 적재</h3>
             </div>
             <div class="box-body">
 			    <!-- The file upload form used as target for the file upload widget -->
 			    <form id="fileupload" action="/SmartKMS/fileupload" method="POST" enctype="multipart/form-data">
-			    		<label>Index Name</label>
-			    		<div class="form-group _indexform">
+		    		<label><i class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;&nbsp;&nbsp;Index Name</label>
+		    		<div class="form-group _indexform">
 						<input class="form-control _indexName col-md-6" type="text" name="indexName" placeholder="Index 이름" style="width: 40%;">
 					    <button type="button" class="btn btn-primary _selectindex col-md-3" >
 					                    <i class="glyphicon glyphicon-th-list"></i>&nbsp;&nbsp;&nbsp;
@@ -138,8 +138,53 @@
 				    </div>
 				    <br>
 				    <br>
+				    <!-- Index 생성을 위한 폼들 -->
+				    <div class="_indexoptions">
+				    	<div class="form-group _shardform">
+						    <label>Alias</label>
+						    <br>
+						    <input class="form-control col-md-6 _alias" type="text" name="alias" placeholder="Input Alias Name" style="width: 40%;">
+						</div>
+						<br>
+					    <br>
+					    <div class="form-group _shardform">
+						    <label><i class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;&nbsp;&nbsp;Type</label>
+						    <br>
+						    <input class="form-control col-md-6 _newtype" type="text" name="newtype" placeholder="Input Type" style="width: 40%;">
+						</div>
+						<br>
+					    <br>
+					    <div class="form-group _shardform">
+						    <label>Shard Num</label>
+						    <br>
+						    <input class="form-control col-md-6 _shard" type="text" name="shard" placeholder="Input Shard Num" style="width: 40%;">
+						</div>
+						<br>
+					    <br>
+					    <div class="form-group _replicaform">
+						    <label>Replica Num</label>
+						    <br>
+						    <input class="form-control col-md-6 _replica" type="text" name="replica" placeholder="Input Replica Num" style="width: 40%;">
+						</div>
+						<br>
+					    <br>
+					    <div class="form-group _mappingform">
+						    <label>Mapping</label>
+						    <br>
+						    <textarea class="form-control col-md-6 _mapping" name="mapping" rows="8" cols="80"></textarea>
+						</div>
+						<br>
+					    <br>
+					    <div class="form-group">
+					    <button type="button" class="btn btn-primary _indexsubmit col-md-3" >
+						                    <i class="glyphicon glyphicon-plus"></i>&nbsp;&nbsp;&nbsp;
+						                    <span>Index 생성</span>
+						                </button>
+						</div>
+					</div>
+					<!-- Index 생성을 위한 폼들 끝 -->
 				    <div class="form-group _typeform">
-					    <label>Type</label>
+					    <label><i class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;&nbsp;&nbsp;Type</label>
 					    <br>
 					    <input class="form-control col-md-6 _type" type="text" name="type" placeholder="Input Type" style="width: 40%;">
 					    <button type="button" class="btn btn-primary _selecttype col-md-3" >
@@ -149,7 +194,7 @@
 					</div>
 					<br>
 					<br>
-					<div class="form-group">
+					<div class="form-group _isimport">
 					    <label>
 				        <input type="checkbox" name="isImport" class="minimal _isimport" checked>
 				        Import to Elasticsearch
@@ -171,7 +216,7 @@
 			        <!-- Redirect browsers with JavaScript disabled to the origin page -->
 			        <noscript><input type="hidden" name="redirect" value="https://blueimp.github.io/jQuery-File-Upload/"></noscript>
 			        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
-			        <div class="row fileupload-buttonbar">
+			        <div class="row fileupload-buttonbar _uploadbuttons">
 			            <div class="col-lg-12">
 			                <!-- The fileinput-button span is used to style the file input field as button -->
 			                <span class="btn btn-success fileinput-button">

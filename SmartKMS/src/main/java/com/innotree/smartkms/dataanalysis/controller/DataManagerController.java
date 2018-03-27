@@ -15,6 +15,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -54,6 +57,25 @@ public class DataManagerController {
 	private int importedLine = 0;
 	private int importedCnt = 0;
 	private boolean isImportComplete = false;
+	
+	@PostMapping("/createindex")
+	@ResponseBody
+	public Map<String, String> createIndex(@RequestBody Map<String, Object> param) {
+		logger.debug("##### createIndex : param = {}", param);
+		Map<String, String> resultMap = new HashMap<String, String>();
+		
+		CreateIndexResponse response = ElasticRESTHelper.createIndex(param);
+		
+		if (response != null) {
+			resultMap.put("code", "9999");
+			resultMap.put("message", "Index를 정상적으로 생성하였습니다.");
+		} else {
+			resultMap.put("code", "2000");
+			resultMap.put("message", "Index 생성에 실패하였습니다.");
+		}
+		
+		return resultMap;
+	}
 	
 	@GetMapping("/startimport")
 	@ResponseBody

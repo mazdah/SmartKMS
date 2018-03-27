@@ -114,6 +114,52 @@ public class ElasticRESTHelper {
 		return createIndexResponse;
 	}
 	
+	public static CreateIndexResponse createIndex(Map<String, Object> options) {
+		RestHighLevelClient client = ElasticClientHelper.newRestHighLevelClient();
+		CreateIndexRequest request = new CreateIndexRequest((String) options.get("indexName"));
+		
+		request.settings(Settings.builder() 
+		    .put("index.number_of_shards", Integer.valueOf((String) options.get("shard")))
+		    .put("index.number_of_replicas", Integer.valueOf((String) options.get("replica")))
+		);
+		
+		// mapping sample
+		if (options.containsKey("mapping")) {
+			request.mapping((String) options.get("type"), 
+					(String) options.get("mapping"), 
+				    XContentType.JSON);
+		}
+
+		// Alias sample
+		if (options.containsKey("alias")) {
+			request.alias(
+			    new Alias((String) options.get("alias"))  
+			);
+		}
+		
+		
+		//Timeout to wait for the all the nodes to acknowledge the index creation as a TimeValue
+		//Timeout to wait for the all the nodes to acknowledge the index creation as a String
+		request.timeout(TimeValue.timeValueMinutes(2));
+		request.timeout("2m");
+		
+		//The number of active shard copies to wait for before the create index API returns a response, as an int.
+		//The number of active shard copies to wait for before the create index API returns a response, as an ActiveShardCount.
+		request.masterNodeTimeout(TimeValue.timeValueMinutes(1));
+		request.masterNodeTimeout("1m");
+		
+		CreateIndexResponse createIndexResponse = null;
+		try {
+			createIndexResponse = client.indices().create(request);
+			client.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.debug("##### [IOException] createIndex : " + e.getLocalizedMessage());
+		}
+		
+		return createIndexResponse;
+	}
+	
 	public static void createIndexAsync(String indexName) {
 		RestHighLevelClient client = ElasticClientHelper.newRestHighLevelClient();
 		CreateIndexRequest request = new CreateIndexRequest(indexName);

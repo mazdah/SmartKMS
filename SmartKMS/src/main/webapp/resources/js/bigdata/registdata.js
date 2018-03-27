@@ -14,6 +14,7 @@ var readyType = "N";
 var currPage = 0;
 
 $("._indexsel").hide();
+$("._indexoptions").hide();
 
 function getTimestampToDate(timestamp){
 
@@ -277,6 +278,8 @@ $(document).ready(function () {
     		$("._indexform").empty();
 		$("._indexform").append(indexTemplate);
 		
+		view.changeForm(true);
+		
 		readyIndex = "N";
     });
     
@@ -288,6 +291,7 @@ $(document).ready(function () {
     		
     		$("._indexform").empty();
     		$("._indexform").append(indexSelectHtml);
+    		view.changeForm(false);
     		readyIndex = "S";
     });
     
@@ -319,6 +323,11 @@ $(document).ready(function () {
 	$(document).on("change", "._indexName", function () {
 		controller.getType($("._indexName option:selected").val());
 	});
+	
+	$("._indexsubmit").click(function() {
+		//alert("인덱스 생성!!!");
+		controller.createIndex();
+	});
 });
 
 var view = function () {
@@ -327,8 +336,25 @@ var view = function () {
 		
 	};
 	
+	var _changeForm = function (isIndex) {
+		if (isIndex == true) {
+			$("._typeform").hide();
+			$("._isimport").hide();
+			$("._uploadbuttons").hide();
+			
+			$("._indexoptions").show();
+		} else {
+			$("._typeform").show();
+			$("._isimport").show();
+			$("._uploadbuttons").show();
+			
+			$("._indexoptions").hide();
+		}
+	}
+	
 	return {
-		init			: _init
+		init			: _init,
+		changeForm		: _changeForm
 	}
 }();
 
@@ -341,6 +367,7 @@ var controller = function () {
 	var _init = function() {
 		_getIndexList();
 	};
+	
 	
 	var _getIndexList = function() {
 		 $.ajax({
@@ -367,12 +394,15 @@ var controller = function () {
 
 		            	$("._indexform").empty();
 		            	$("._indexform").append(indexTemplate);
+		            	
+		            	view.changeForm(false);
 		            		
 		            	indexSelectHtml = indexTemplate;
 		            	_getType(data[0]);
 		            	readyIndex = "S";
 	            } else {
-	            		readyIndex = "N";
+	            	view.changeForm(true);
+	            	readyIndex = "N";
 	            }
 	        },
 	        error: function (jqXHR, status) {
@@ -388,7 +418,8 @@ var controller = function () {
 	        dataType: 'json',
 	        success: function(data, status, jqXHR) {
 	            if (data.length > 0) {
-	    	            	var typeTemplate = '<select class="form-control select2 _type col-md-6" name="type" style="width: 40%;">';
+	    	            	var typeTemplate = '<label><i class="glyphicon glyphicon-exclamation-sign"></i>&nbsp;&nbsp;&nbsp;Type</label><br>';
+	    	            	typeTemplate += '<select class="form-control select2 _type col-md-6" name="type" style="width: 40%;">';
 	    	            	
 	    	            	for(i in data) {
 	    	            		if (i == 0) {
@@ -418,6 +449,59 @@ var controller = function () {
 	        	
 	        }
 	    });
+	};
+	
+	var _createIndex = function() {
+		var indexName = $("._indexName").val();
+		var type = $("._newtype").val();
+		var shard = $("._shard").val();
+		var replica = $("._replica").val();
+		
+		if (indexName == "" || indexName == undefined) {
+			alert("Index 이름은 필수 입력입니다.");
+			return;
+		}
+		
+		if (type == "" || type == undefined) {
+			alert("Type은 필수 입력입니다.");
+			return;
+		}
+		
+		
+		var indexObj = {};
+		indexObj.indexName = indexName;
+		indexObj.alias = $("._alias").val();
+		indexObj.type = type;
+		
+		if (shard == "" || shard == undefined) {
+			indexObj.shard = 1;
+		} else {
+			indexObj.shard = shard;
+		}
+		
+		if (replica == "" || replica == undefined) {
+			indexObj.replica = 0;
+		} else {
+			indexObj.replica = replica;
+		}
+		
+		
+		indexObj.mapping = $("._mapping").val();
+		
+		$.ajax({
+	        url: '/SmartKMS/createindex',
+	        type: 'POST',
+	        dataType: 'json',
+	        contentType: 'application/json; charset=utf-8',
+	        data: JSON.stringify(indexObj),
+	        success: function(data, status, jqXHR) {
+	        	alert("success : " + data.message);
+	        	location.reload();
+	        },
+	        error: function (jqXHR, status) {
+	        	alert("fail : " + JSON.stringify(jqXHR));
+	        }
+		});
 	};
 	
 	var _importData = function(id, fileName, indexName, type) {
@@ -540,10 +624,11 @@ var controller = function () {
 	return {
 		init			: _init,
 		getType		: _getType,
+		createIndex	: _createIndex,
 		importData	: _importData,
-		poll			: _poll,
+		poll		: _poll,
 		deleteFile	: _deleteFile,
-		downloadFile	: _downloadFile
+		downloadFile: _downloadFile
 	}
 }();
 
