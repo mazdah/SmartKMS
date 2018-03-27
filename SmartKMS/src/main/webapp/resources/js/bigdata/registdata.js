@@ -328,6 +328,20 @@ $(document).ready(function () {
 		//alert("인덱스 생성!!!");
 		controller.createIndex();
 	});
+	
+	$("._getindices").click(function() {
+		$.ajax({
+	        url: 'http://localhost:9200/_cat/indices?v',
+	        type: 'GET',
+	        dataType: 'json',
+	        success: function(data, status, jqXHR) {
+	            alert(JSON.stringify(data));
+	        },
+	        error: function (jqXHR, status) {
+	        	
+	        }
+	    });
+	});
 });
 
 var view = function () {
