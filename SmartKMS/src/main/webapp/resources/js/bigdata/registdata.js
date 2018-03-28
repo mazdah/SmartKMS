@@ -268,6 +268,37 @@ $(document).ready(function () {
       radioClass   : 'iradio_minimal-blue'
     })
     
+    var makeTable = function (str) {
+    	var tableTag = "<table class='table table-bordered'";
+    	
+    	var rows = str.split("\n");
+    	var rowCnt = rows.length - 1;
+    	
+    	for (i = 0; i < rowCnt; i++) {
+    		var cols = rows[i].split(/\s+/);
+			var colCnt = cols.length;
+
+    		if (i == 0) {
+    			tableTag += "<thead><tr>";
+		
+    			for (j = 0; j < colCnt; j++) {
+    				tableTag += "<td>" + cols[j] + "</td>";
+    			}
+    			
+    			tableTag += "</tr></thead><tbody>";
+    		} else {
+    			tableTag += "<tr>";
+    			for (j = 0; j < colCnt; j++) {
+    				tableTag += "<td>" + cols[j] + "</td>";
+    			}
+    			tableTag += "<tr>";
+    		}
+    	}
+    	
+    	tableTag += "</tbody></table>";
+    	return tableTag;
+    }
+    
     $(document).on("click", "._createindex", function () {
 	    	var indexTemplate = '<input class="form-control _indexName col-md-6" type="text" name="indexName" placeholder="Index 이름" style="width: 40%;">'
 	    		+ '<button type="button" class="btn btn-primary _selectindex col-md-3" >'
@@ -330,18 +361,100 @@ $(document).ready(function () {
 	});
 	
 	$("._getindices").click(function() {
+		// 옵션에 dataType: 'json' 추가하면 정상적인 경우에도 error 콜백으로 결과가 들어온다.
+		requestCall("il", "_cat/indices?v");
+	});
+	
+	$("._clusterhealth").click(function() {
+		requestCall("ch", "_cluster/health");
+	});
+	
+	$("._nodestats").click(function() {
+		requestCall("ns", "_nodes/stats");
+	});
+	
+	var requestCall = function (type, queryStr) {
 		$.ajax({
-	        url: 'http://localhost:9200/_cat/indices?v',
+	        url: 'http://localhost:9200/' + queryStr,
 	        type: 'GET',
-	        dataType: 'json',
+	        contentType: 'application/json; charset=utf-8',
+	        crossDomain: true,
+	        async: true,
+	        processData: false,
+	        beforeSend: function (xhr) { 
+                xhr.setRequestHeader('Authorization', "Basic " + btoa("elastic:smartkms12#$")); 
+	        },
 	        success: function(data, status, jqXHR) {
-	            alert(JSON.stringify(data));
+	        	if (type == "il") {
+	        		$("#modal-primary").modal();
+		        	$("._modal2-title").text("Index List");
+		        	$("._modal2-message").empty()
+		        	$("._modal2-message").append(makeTable(data));
+	        	} else if (type == "ch") {        		
+	        		var tag = "";
+	        		tag += "Cluster 이름 : " + data.cluster_name + "<br />";
+	        		tag += "Cluster 상태 : <span style='color: " + data.status + ";'>" + data.status + "</span><br />";
+	        		tag += "Node 수 : " + data.number_of_nodes + " 개<br />";
+	        		tag += "Data Node 수 : " + data.number_of_data_nodes + "개<br />";
+	        		tag += "Activ Primary Shards : " + data.active_primary_shards + "<br />";
+	        		tag += "Activ Shards : " + data.active_shards + "<br />";
+	        		tag += "Relocating Shards : " + data.relocating_shards + "<br />";
+	        		tag += "Initializing Shards : " + data.initializing_shards + "<br />";
+	        		tag += "Unassigned Shards : " + data.unassigned_shards + "<br />";
+	        		tag += "Delayed Unassigned Shards : " + data.delayed_unassigned_shards + "<br />";
+	        		tag += "Number of Pending Tasks : " + data.number_of_pending_tasks + "<br />";
+	        		tag += "Number of in Flight Fetch : " + data.number_of_in_flight_fetch + "<br />";
+	        		tag += "Task Max Waiting in Queue Millis : " + data.task_max_waiting_in_queue_millis + "<br />";
+	        		tag += "Active Shards Percent as Number : " + Number.parseFloat(data.active_shards_percent_as_number).toFixed(2) + " %<br />";
+	        		
+	        		$("#modal-primary").modal();
+		        	$("._modal2-title").text("Cluster Health");
+	        		$("._modal2-message").empty()
+		        	$("._modal2-message").append(tag);
+	        	} else if (type == "ns") {
+	        		var tag = "";
+	        		tag += "노드 상태 : <br />";
+	        		tag += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;전체 노드 수 : " + data._nodes.total + "<br />";
+	        		tag += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;정상 노드 수 : " + data._nodes.successful + "<br />";
+	        		tag += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;죽은 노드 수 : " + data._nodes.failed + "<br />";
+	        		tag += "Cluster 이름 : " + data.cluster_name + "<br /><br />";
+	        		tag += "Node 목록<br /></br>";
+	        		
+	        		var keyArr = Object.keys(data.nodes);
+	        		var keyCnt = keyArr.length;
+	        		
+	        		for (i = 0; i < keyCnt; i++) {
+	        			tag += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Node Id : " + keyArr[i] + "<br />";
+	        			tag += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Host : " + data.nodes[keyArr[i]].host + "<br />";
+	        			tag += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;IP : " + data.nodes[keyArr[i]].ip + "<br />";
+	        			tag += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Transport Address : " + data.nodes[keyArr[i]].transport_address + "<br />";
+	        			
+	        			var roleArr = data.nodes[keyArr[i]].roles;
+	        			var roleCnt = roleArr.length;
+	        			
+	        			tag += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Role : <br />";
+	        			for (j = 0; j < roleCnt; j++) {
+	        				tag += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; " + roleArr[j] + "<br />";
+	        			}
+	        			
+	        			if (i < (keyCnt - 1)) {
+	        				tag += "<br /><br />"
+	        			}
+	        		}
+	        		
+
+	        		$("#modal-primary").modal();
+		        	$("._modal2-title").text("Nodes Stats");
+	        		$("._modal2-message").empty()
+		        	$("._modal2-message").append(tag);
+	        	}
+	        	
 	        },
 	        error: function (jqXHR, status) {
-	        	
+	        	alert("[ERROR] " + JSON.stringify(jqXHR));
 	        }
 	    });
-	});
+	};
 });
 
 var view = function () {

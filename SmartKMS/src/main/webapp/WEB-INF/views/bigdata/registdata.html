@@ -117,6 +117,27 @@
   </div>
 </div>
 <!-- /.modal-dialog -->
+<!-- /.modal-dialog -->
+<div class="modal modal-primary fade" id="modal-primary">
+  <div class="modal-dialog" style="width: 900px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close  _close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title _modal2-title">Index List</h4>
+      </div>
+      <div class="modal-body">
+      	<div class="_modal2-message" style="overflow: auto; height: 300px;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline _modal2-close" data-dismiss="modal">닫 기</button>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+</div>
+<!-- /.modal-dialog -->
 <div class="row">
         <div class="col-md-6">
           <div class="box box-default">
@@ -255,8 +276,20 @@
               <h3 class="box-title">Elasticsearch 정보</h3>
             </div>
             <div class="box-body">
+            	<button type="button" class="btn btn-primary _clusterhealth">
+	            <i class="glyphicon glyphicon-info-sign"></i>
+	            
+	            <span>Cluster Health</span>
+	            </button>
+	            <br><br>
+	            <button type="button" class="btn btn-primary _nodestats">
+	            <i class="glyphicon glyphicon-info-sign"></i>
+	            
+	            <span>Nodes Stats</span>
+	            </button>
+	            <br><br>
 	            <button type="button" class="btn btn-primary _getindices">
-	            <i class="glyphicon glyphicon-th-list"></i>
+	            <i class="glyphicon glyphicon-info-sign"></i>
 	            
 	            <span>Index 목록</span>
 	            </button>
