@@ -279,7 +279,7 @@ $(document).ready(function () {
 			var colCnt = cols.length;
 
     		if (i == 0) {
-    			tableTag += "<thead><tr>";
+    			tableTag += "<thead><tr style='background-color: black;'>";
 		
     			for (j = 0; j < colCnt; j++) {
     				tableTag += "<td>" + cols[j] + "</td>";
