@@ -1,4 +1,4 @@
-package com.innotree.smartkms.config;
+package com.mazdah.eeimporter.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

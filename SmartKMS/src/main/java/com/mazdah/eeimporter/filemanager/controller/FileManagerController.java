@@ -1,4 +1,4 @@
-package com.innotree.smartkms.filemanager.controller;
+package com.mazdah.eeimporter.filemanager.controller;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -33,8 +33,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.innotree.smartkms.datafiles.model.DataFiles;
-import com.innotree.smartkms.datafiles.repository.DataFilesRepository;
+import com.mazdah.eeimporter.datafiles.model.DataFiles;
+import com.mazdah.eeimporter.datafiles.repository.DataFilesRepository;
 
 @Controller
 @EnableAutoConfiguration

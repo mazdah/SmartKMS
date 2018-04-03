@@ -1,4 +1,4 @@
-package com.innotree.smartkms.elastic;
+package com.mazdah.eeimporter.elastic;
 
 import java.io.IOException;
 import java.util.List;

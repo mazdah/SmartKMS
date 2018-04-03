@@ -1,4 +1,4 @@
-package com.innotree.smartkms.dataanalysis.controller;
+package com.mazdah.eeimporter.dataanalysis.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,11 +30,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.innotree.smartkms.datafiles.model.DataFiles;
-import com.innotree.smartkms.datafiles.repository.DataFilesRepository;
-import com.innotree.smartkms.elastic.DataParser;
-import com.innotree.smartkms.elastic.ElasticHelper;
-import com.innotree.smartkms.elastic.ElasticRESTHelper;
+import com.mazdah.eeimporter.datafiles.model.DataFiles;
+import com.mazdah.eeimporter.datafiles.repository.DataFilesRepository;
+import com.mazdah.eeimporter.elastic.DataParser;
+import com.mazdah.eeimporter.elastic.ElasticHelper;
+import com.mazdah.eeimporter.elastic.ElasticRESTHelper;
 import com.monitorjbl.xlsx.StreamingReader;
 
 @Controller

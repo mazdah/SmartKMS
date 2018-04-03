@@ -1,4 +1,4 @@
-package com.innotree.smartkms.config;
+package com.mazdah.eeimporter.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 
 @Configuration
-@ComponentScan(basePackages = {"com.innotree.smartkms"})
+@ComponentScan(basePackages = {"com.mazdah.eeimporter"})
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
@@ -40,7 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http
 		.headers().frameOptions().sameOrigin()	// iframe 허용 처리
 		.and() 
-		.authorizeRequests().antMatchers("/SmartKMS/admin/**").access("ROLE_ADMIN")
+		.authorizeRequests().antMatchers("/EEImporter/admin/**").access("ROLE_ADMIN")
 		.and()												// 
         .httpBasic()											//
         .authenticationEntryPoint(forbiddenEntryPoint)		// 파일 업로드를 위한 처리

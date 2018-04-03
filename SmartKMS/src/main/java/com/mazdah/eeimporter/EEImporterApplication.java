@@ -1,4 +1,4 @@
-package com.innotree.smartkms;
+package com.mazdah.eeimporter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,9 +8,9 @@ import javassist.CtField.Initializer;
 
 @SpringBootApplication
 @EnableJpaAuditing
-public class SmartKmsApplication {
+public class EEImporterApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(new Class[] {SmartKmsApplication.class, Initializer.class}, args);
+		SpringApplication.run(new Class[] {EEImporterApplication.class, Initializer.class}, args);
 	}
 }

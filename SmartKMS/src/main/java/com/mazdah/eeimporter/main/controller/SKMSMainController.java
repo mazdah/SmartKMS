@@ -1,4 +1,4 @@
-package com.innotree.smartkms.main.controller;
+package com.mazdah.eeimporter.main.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.innotree.smartkms.elastic.ElasticHelper;
+import com.mazdah.eeimporter.elastic.ElasticHelper;
 
 @Controller
 @EnableAutoConfiguration

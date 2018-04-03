@@ -1,11 +1,11 @@
-package com.innotree.smartkms.datafiles.repository;
+package com.mazdah.eeimporter.datafiles.repository;
 
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.innotree.smartkms.datafiles.model.DataFiles;
+import com.mazdah.eeimporter.datafiles.model.DataFiles;
 
 public interface DataFilesRepository extends JpaRepository<DataFiles, Long> {
 	

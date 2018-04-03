@@ -1,4 +1,4 @@
-package com.innotree.smartkms;
+package com.mazdah.eeimporter;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -7,7 +7,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(SmartKmsApplication.class);
+		return application.sources(EEImporterApplication.class);
 	}
 
 }

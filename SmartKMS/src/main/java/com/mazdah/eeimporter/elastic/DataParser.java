@@ -1,4 +1,4 @@
-package com.innotree.smartkms.elastic;
+package com.mazdah.eeimporter.elastic;
 
 import java.util.Map;
 

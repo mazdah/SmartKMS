@@ -1,4 +1,4 @@
-package com.innotree.smartkms.config;
+package com.mazdah.eeimporter.config;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

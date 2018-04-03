@@ -1,4 +1,4 @@
-package com.innotree.smartkms.config;
+package com.mazdah.eeimporter.config;
 
 import java.io.IOException;
 import java.util.Set;
@@ -46,8 +46,8 @@ public class WebInitializer implements WebApplicationInitializer {
     		servletContext.setInitParameter("contextConfigLocation", "<NONE>");
     	
     		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-    		context.setConfigLocation("com.innotree.smartkms.config");
-    		context.register(SKMSMvcConfig.class);
+    		context.setConfigLocation("com.mazdah.eeimporter.config");
+    		context.register(WebMvcConfig.class);
     		context.register(WebSecurityConfig.class);
     		//servletContext.addListener(new ContextLoaderListener(context));
     		

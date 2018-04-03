@@ -1,4 +1,4 @@
-package com.innotree.smartkms.datafiles.model;
+package com.mazdah.eeimporter.datafiles.model;
 
 import java.io.Serializable;
 import java.util.Date;

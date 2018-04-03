@@ -1,4 +1,4 @@
-package com.innotree.smartkms.config;
+package com.mazdah.eeimporter.config;
 
 import java.io.IOException;
 import java.util.List;
@@ -43,17 +43,17 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.innotree.smartkms.config.HttpInterceptor;
+import com.mazdah.eeimporter.config.HttpInterceptor;
 
 
 
 @EnableWebMvc
-@ComponentScan(basePackages = {"com.innotree.smartkms"})
+@ComponentScan(basePackages = {"com.mazdah.eeimporter"})
 @Configuration
 @PropertySource(value = {"classpath:common.properties"})
-public class SKMSMvcConfig implements WebMvcConfigurer {
+public class WebMvcConfig implements WebMvcConfigurer {
 
-	Logger logger = LoggerFactory.getLogger(SKMSMvcConfig.class);
+	Logger logger = LoggerFactory.getLogger(WebMvcConfig.class);
 
 	@Value("${file.temp.dir}")
 	private String tempDir;
@@ -88,8 +88,8 @@ public class SKMSMvcConfig implements WebMvcConfigurer {
 	public void addViewControllers(ViewControllerRegistry registry) {
 		// TODO Auto-generated method stub
 		
-		registry.addViewController("/SmartKMS/").setViewName("index");
-		registry.addViewController("/SmartKMS/admin/").setViewName("index");
+		registry.addViewController("/EEImporter/").setViewName("index");
+		registry.addViewController("/EEImporter/admin/").setViewName("index");
 		registry.addViewController("/").setViewName("index");
 	}
 
