@@ -72,7 +72,7 @@ $(function () {
         "serverSide": true,
         "pageLength": 10,
         "ajax": {
-            "url": "/SmartKMS/filelist",
+            "url": "/EEImporter/filelist",
             "data": function ( data ) {
             		var table = $('#example1').DataTable()
                 data.page = (table != undefined)?table.page.info().page:0;
@@ -166,14 +166,14 @@ $(function () {
     $('#fileupload').fileupload({
         // Uncomment the following to send cross-domain cookies:
         //xhrFields: {withCredentials: true},
-        url: '/SmartKMS/fileupload'
+        url: '/EEImporter/fileupload'
     });
 
     // Enable iframe cross-domain access via redirect option:
 //    $('#fileupload').fileupload(
 //        'option',
 //        'redirect',
-//        '/SmartKMS/result'
+//        '/EEImporter/result'
 //    );
     
     $('#fileupload').bind('fileuploaddestroy', function (e, data) {
@@ -375,14 +375,14 @@ $(document).ready(function () {
 	
 	var requestCall = function (type, queryStr) {
 		$.ajax({
-	        url: 'http://localhost:9200/' + queryStr,
+	        url: 'http://172.30.1.41:9200/' + queryStr,
 	        type: 'GET',
 	        contentType: 'application/json; charset=utf-8',
 	        crossDomain: true,
 	        async: true,
 	        processData: false,
 	        beforeSend: function (xhr) { 
-                xhr.setRequestHeader('Authorization', "Basic " + btoa("elastic:smartkms12#$")); 
+                xhr.setRequestHeader('Authorization', "Basic " + btoa("mazdah:w00hj8928")); 
 	        },
 	        success: function(data, status, jqXHR) {
 	        	if (type == "il") {
@@ -498,7 +498,7 @@ var controller = function () {
 	
 	var _getIndexList = function() {
 		 $.ajax({
-	        url: '/SmartKMS/indices',
+	        url: '/EEImporter/indices',
 	        type: 'GET',
 	        dataType: 'json',
 	        success: function(data, status, jqXHR) {
@@ -540,7 +540,7 @@ var controller = function () {
 	
 	var _getType = function (index) {
 		$.ajax({
-	        url: '/SmartKMS/types?index=' + index,
+	        url: '/EEImporter/types?index=' + index,
 	        type: 'GET',
 	        dataType: 'json',
 	        success: function(data, status, jqXHR) {
@@ -616,7 +616,7 @@ var controller = function () {
 		indexObj.mapping = $("._mapping").val();
 		
 		$.ajax({
-	        url: '/SmartKMS/createindex',
+	        url: '/EEImporter/createindex',
 	        type: 'POST',
 	        dataType: 'json',
 	        contentType: 'application/json; charset=utf-8',
@@ -633,7 +633,7 @@ var controller = function () {
 	
 	var _importData = function(id, fileName, indexName, type) {
 		$.ajax({
-	        url: '/SmartKMS/startimport?id=' + id + '&fileName=' + fileName + '&indexName=' + indexName + '&type=' + type,
+	        url: '/EEImporter/startimport?id=' + id + '&fileName=' + fileName + '&indexName=' + indexName + '&type=' + type,
 	        type: 'GET',
 	        dataType: 'json',
 	        contentType: 'application/json; charset=utf-8',
@@ -666,7 +666,7 @@ var controller = function () {
 
     var _poll = function() {   		
         $req = $.ajax({
-            url: '/SmartKMS/checkprocess',
+            url: '/EEImporter/checkprocess',
             type: 'GET',
             dataType: 'json',
             success: function(data, status, jqXHR) {
@@ -716,7 +716,7 @@ var controller = function () {
     
     var _deleteFile = function (fileId, fileName) {
     		$.ajax({
-	        url: '/SmartKMS/filedelete?fileId=' + fileId + '&fileName=' + fileName,
+	        url: '/EEImporter/filedelete?fileId=' + fileId + '&fileName=' + fileName,
 	        type: 'GET',
 	        dataType: 'json',
 	        contentType: 'application/json; charset=utf-8',
@@ -732,9 +732,9 @@ var controller = function () {
     };
     
     var _downloadFile = function (filePath, fileName) {
-    		window.location.href = '/SmartKMS/download?filePath=' + filePath + '&fileName=' + fileName;
+    		window.location.href = '/EEImporter/download?filePath=' + filePath + '&fileName=' + fileName;
 //		$.ajax({
-//        url: '/SmartKMS/download?filePath=' + filePath + '&fileName=' + fileName,
+//        url: '/EEImporter/download?filePath=' + filePath + '&fileName=' + fileName,
 //        type: 'GET',
 //        dataType: 'json',
 //        contentType: 'application/json; charset=utf-8',

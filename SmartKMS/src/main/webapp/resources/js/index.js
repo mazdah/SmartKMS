@@ -60,25 +60,25 @@ function displayHeader(main, sub, parentMenu, childMenu) {
 
 $(document).ready(function() {
 	$("._dataregist").click(function () {
-		$("#ciframe").attr("src", "/SmartKMS/dataregist");
+		$("#ciframe").attr("src", "/EEImporter/dataregist");
 		
 		displayHeader("데이터 등록", "MS Excel (xlsx 포맷만 가능)", "빅데이터 분석", "데이터 등록")
 	});
 	
 	$("._indexlist").click(function () {
-		$("#ciframe").attr("src", "/SmartKMS/indexlist");
+		$("#ciframe").attr("src", "/EEImporter/indexlist");
 		
 		displayHeader("Index 목록", "기등록된 Index 목록 및 상세 내용 조회", "빅데이터 분석", "Index 목록")
 	});
 
 	$("._datachart").click(function () {
-		$("#ciframe").attr("src", "/SmartKMS/datachart");
+		$("#ciframe").attr("src", "/EEImporter/datachart");
 		
 		displayHeader("데이터 Chart", "배치 분석된 데이터 chart 조회", "빅데이터 분석", "데이터 Chart")
 	});
 
 	$("._realtimechart").click(function () {
-		$("#ciframe").attr("src", "/SmartKMS/realtimechart");
+		$("#ciframe").attr("src", "/EEImporter/realtimechart");
 		
 		displayHeader("Realtime Chart", "API를 통해 실시간 조회된 데이터의 chart", "빅데이터 분석", "Realtime Chart")
 	});

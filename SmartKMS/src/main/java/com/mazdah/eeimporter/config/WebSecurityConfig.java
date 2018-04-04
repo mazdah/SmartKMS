@@ -29,7 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// TODO Auto-generated method stub
 		super.configure(web);
 		
-		web.ignoring().antMatchers("/css/**", "/js/**", "/images/**", "/png/**", "/**");
+		web.ignoring().antMatchers("/**");
 	}
 
 	@Override
@@ -37,15 +37,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// TODO Auto-generated method stub
 		super.configure(http);
 		
-		http
-		.headers().frameOptions().sameOrigin()	// iframe 허용 처리
-		.and() 
-		.authorizeRequests().antMatchers("/EEImporter/admin/**").access("ROLE_ADMIN")
-		.and()												// 
-        .httpBasic()											//
-        .authenticationEntryPoint(forbiddenEntryPoint)		// 파일 업로드를 위한 처리
-        .and()												//
-        .csrf().disable();									//
+//		http
+//		.headers().frameOptions().sameOrigin()	// iframe 허용 처리
+//		.and() 
+//		.authorizeRequests().antMatchers("/EEImporter/admin/**").access("ROLE_ADMIN")
+//		.and()												// 
+//        .httpBasic()											//
+//        .authenticationEntryPoint(forbiddenEntryPoint)		// 파일 업로드를 위한 처리
+//        .and()												//
+//        .csrf().disable();									//
 	}
 	
 	@Autowired
