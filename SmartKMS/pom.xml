@@ -136,23 +136,23 @@
 		<dependency>
 		    <groupId>org.apache.tika</groupId>
 		    <artifactId>tika-parsers</artifactId>
-		    <version>1.17</version>
+		    <version>1.22</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.tika</groupId>
 		    <artifactId>tika</artifactId>
-		    <version>1.17</version>
+		    <version>1.22</version>
 		    <type>pom</type>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.tika</groupId>
 		    <artifactId>tika-bundle</artifactId>
-		    <version>1.17</version>
+		    <version>1.22</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.tika</groupId>
 		    <artifactId>tika-app</artifactId>
-		    <version>1.17</version>
+		    <version>1.22</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.elasticsearch</groupId>
