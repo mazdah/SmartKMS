@@ -187,7 +187,7 @@
 		<dependency>
 		    <groupId>org.elasticsearch</groupId>
 		    <artifactId>elasticsearch</artifactId>
-		    <version>6.2.2</version><!--$NO-MVN-MAN-VER$-->
+		    <version>6.8.15</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
 		<dependency>
 		    <groupId>org.elasticsearch.client</groupId>
